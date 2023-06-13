@@ -1,25 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react';
+import { Router } from "@gatsbyjs/reach-router";
+import { useDispatch } from 'react-redux';
+import 'antd/dist/reset.css';
+import H2GLoginPage from './login';
+import H2GAdminPage from './admin';
+import Hands2GetherSite from './site';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = (props) => {
+    const dispatch = useDispatch();
+    return (
+        <Router>
+            <Hands2GetherSite path="/" />
+            <H2GLoginPage path="/login/*" />
+            <H2GAdminPage path="/admin/*" />
+        </Router>
+
+    )
 }
 
-export default App;
+export default App
