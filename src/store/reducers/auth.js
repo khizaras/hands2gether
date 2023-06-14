@@ -1,23 +1,30 @@
 import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
     isAuth: false,
-    user: null,  
-    error: null
+    user: null,
+    error: null,
+    geolocation: {}
 }
 
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
-    reducers: {    
+    reducers: {
         updateAuth: (state, action) => {
-            return{
-            ...state,
-            ...action.payload
+            return {
+                ...state,
+                ...action.payload
+            }
+        },
+        updateGeolocation: (state, action) => {
+            return {
+                ...state,
+                geolocation: action.payload
             }
         }
     }
 })
 
-export const { updateAuth } = authSlice.actions
+export const { updateAuth, updateGeolocation } = authSlice.actions
 export default authSlice.reducer

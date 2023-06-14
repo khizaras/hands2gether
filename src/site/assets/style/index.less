@@ -1,10 +1,26 @@
+//https://coolors.co/palette/3d348b-7678ed-f7b801-f18701-f35b04
 .\!container {
     width: 100% !important
 }
-@primary-color: #6e4abd;
+
+@primary-color: #3d348b;
+@secondary-color: #f5f5f5;
+@button-color: #F18701;
 html {
     margin: 0;
     font-family: 'Roboto', sans-serif;
+}
+button{
+    svg{
+        vertical-align:text-bottom;
+        margin:0 5px
+    }
+}
+span {
+    svg {
+        vertical-align: text-bottom;
+        margin: 0 5px
+    }
 }
 
 .container {
@@ -23,25 +39,78 @@ section.h2g-layout.h2g-site {
         display: flex;
         flex-direction: row;
         background-color: --color-primary;
+
         .h2g-btn,
         .h2g-typography {
             color: #fff;
         }
+
         .h2g-space {
             display: flex;
             justify-content: flex-end;
         }
     }
+
     header.h2g-layout-header.menu-header {
-        background-color: #f2f2f2;
-        box-shadow: 0 0 1px 2px rgba(0, 0, 0, 0.1);
-        .h2g-menu{
+        background-color: @secondary-color;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08), 0px 8px 12px rgba(0, 0, 0, 0.04);
+
+        .h2g-menu {
             background-color: inherit;
             font-size: 18px;
             color: @primary-color;
+
+            li {
+                color: #555;
+            }
         }
     }
     
+    section.banner-content {
+        background-color: #fff;
+        .h2g-carousel {
+            margin: 20px 0;
+            border-radius: 10px;
+            height: 350px;
+            overflow: hidden;
+
+            img {
+               
+                object-fit:contain;
+                object-position: left center;
+            }
+        }
+    }
+
+    main.h2g-layout-content.site-home-content{
+        background-color: #fff;
+        .categories-list{
+            display: grid;
+            grid-template-columns: repeat(5,  120px);
+            grid-gap: 30px;
+            margin: 20px 0;
+            .category-item{
+                box-shadow: 0px 2px 4px rgba(21, 3, 90, 0.08), 0px 8px 12px rgba(0, 0, 0, 0.04);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background-color:@button-color;
+                border-radius: 10px;
+                padding: 20px;
+                cursor: pointer;
+                transition: all 0.3s ease-in-out;
+                &:hover{
+                    transform: scale(1.1);
+                }
+               *{
+                    font-weight: 100;
+                    color: #fff;
+                    stroke-width: 1 !important;
+                }
+            }
+        }
+    }
 }
 
 
@@ -49,11 +118,11 @@ section.h2g-layout.h2g-site {
 
 @media (min-width: 390px) {
     .\!container {
-        max-width: 390px !important
+        max-width: 370px !important
     }
 
     .container {
-        max-width: 390px
+        max-width: 370px
     }
 
 }
