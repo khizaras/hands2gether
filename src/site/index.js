@@ -11,7 +11,8 @@ import { useSelector } from 'react-redux';
 import LocationPickerPopup from './components/locationPicker';
 import { FaShoppingBag,FaBuyNLarge } from "react-icons/fa" 
 import { getItemIcon } from '../api/categories';
-
+import banner1 from './assets/images/banner1.png'
+import banner2 from './assets/images/banner2.png'
 
 const { Header, Footer, Sider, Content } = Layout
 const Hands2GetherSite = (props) => {
@@ -77,12 +78,12 @@ const Hands2GetherSite = (props) => {
         <section className='banner-content'>
           <div className='container' >
             <Carousel autoplay arrows dots className='main-carousel'>
-              <div className='banner-item' >
-                <img src='https://santoshyogainstitute.com/storage/2021/05/The-Noble-Act-of-Anna-Daan-Paani-DaanDonating-food-drinking-water-scaled-2560x1280.jpg' />
-              </div>
-              <div className='banner-item' >
-                <img src="https://www.realsimple.com/thmb/IxKMxzdKaJD7o3sjU5Iv75VoH58=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/women-volunteering-at-food-bank-c4b51b89539f44b5aba6893f92308949.jpg" />
-              </div>
+             
+                <img src={banner1} />
+            
+              
+                <img src={banner2} />
+              
 
             </Carousel>
           </div>

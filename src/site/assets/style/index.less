@@ -71,7 +71,7 @@ section.h2g-layout.h2g-site {
         .h2g-carousel {
             margin: 20px 0;
             border-radius: 10px;
-            height: 350px;
+            height: 400px;
             overflow: hidden;
 
             img {
@@ -95,17 +95,23 @@ section.h2g-layout.h2g-site {
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                background-color:@button-color;
+                background-color: @secondary-color;              
                 border-radius: 10px;
                 padding: 20px;
                 cursor: pointer;
                 transition: all 0.3s ease-in-out;
                 &:hover{
                     transform: scale(1.1);
+                    background-color:@button-color;
+                    *{
+                        font-weight: 100;
+                        color: #fff;
+                        stroke-width: 1 !important;
+                    }
                 }
                *{
                     font-weight: 100;
-                    color: #fff;
+                    color: #555;
                     stroke-width: 1 !important;
                 }
             }

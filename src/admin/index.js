@@ -4,34 +4,17 @@ import { useSelector } from 'react-redux'
 import { Col, ConfigProvider, Layout, Menu, Row, theme, } from 'antd';
 import { H2GTheme } from '../constants/theme';
 import logo from '../assets/images/logo-white.png'
-import {
-    AppstoreOutlined,
-    BarChartOutlined,
-    CloudOutlined,
-    ShopOutlined,
-    TeamOutlined,
-    UploadOutlined,
-    UserOutlined,
-    VideoCameraOutlined,
-} from '@ant-design/icons';
+import AdminSidebar from './pages/menu';
+import { Router } from '@gatsbyjs/reach-router';
+import H2gAdminDashboardPage from './pages/dashboard';
+import AdminMangeCategories from './pages/manageCategories';
+
+
+
 const { Header, Content, Footer, Sider } = Layout;
-const items = [
-    UserOutlined,
-    VideoCameraOutlined,
-    UploadOutlined,
-    BarChartOutlined,
-    CloudOutlined,
-    AppstoreOutlined,
-    TeamOutlined,
-    ShopOutlined,
-].map((icon, index) => ({
-    key: String(index + 1),
-    icon: React.createElement(icon),
-    label: `nav ${index + 1}`,
-}));
+
 const H2GAdminPage = () => {
     const { token, custom } = theme.useToken();
-    console.log({ token, custom });
     const auth = useSelector(state => state.auth);
     useEffect(() => {
 
@@ -41,25 +24,8 @@ const H2GAdminPage = () => {
         <ConfigProvider theme={{ token: H2GTheme.token }}>
 
             <Layout >
-                <Sider
-                    collapsible
-                    style={{
-                        background: token.purple10,
-                        paddingTop: 70
-
-                    }}
-                >
-
-                    <Menu
-                        style={{
-                            background: token.purple10,
-                        }}
-                        theme="dark" mode="inline" defaultSelectedKeys={['4']} items={items} />
-                </Sider>
-                <Layout
-                    className="site-layout"
-
-                >
+                <AdminSidebar token={token} />
+                <Layout className="site-layout">
                     <Header
                         style={{
                             padding: '0 10px',
@@ -77,32 +43,15 @@ const H2GAdminPage = () => {
                     <Content
                         style={{
                             margin: '24px 16px 0',
+                            minHeight: '100vh',
                             overflow: 'initial',
                         }}
                     >
-                        <div
-                            style={{
-                                padding: 24,
-                                textAlign: 'center',
-                                background: "#fff",
-                            }}
-                        >
-                            <p>long content</p>
-                            {
-                                // indicates very long content
-                                Array.from(
-                                    {
-                                        length: 100,
-                                    },
-                                    (_, index) => (
-                                        <React.Fragment key={index}>
-                                            {index % 20 === 0 && index ? 'more' : '...'}
-                                            <br />
-                                        </React.Fragment>
-                                    ),
-                                )
-                            }
-                        </div>
+                        <Router>
+                            <H2gAdminDashboardPage path='/' />
+                            <AdminMangeCategories path='/categories' />
+
+                        </Router>
                     </Content>
 
                 </Layout>
