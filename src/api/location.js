@@ -30,7 +30,7 @@ export const getLocation = async () => {
                         content: 'Please allow location to use this website',
                         onOk: () => {
                             getLocation();
-                            navigator.Axios
+                        
                         },
                         onCancel: () => {
                             reject('Geolocation is not supported by this browser.');

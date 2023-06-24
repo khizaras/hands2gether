@@ -2,7 +2,6 @@ import {
   Button,
   Card,
   Col,
-  Divider,
   Form,
   Row,
   Space,
@@ -11,17 +10,14 @@ import {
   Input,
   Select,
   DatePicker,
-  TimePicker,
   Upload,
-  Switch,
+  Drawer,
 } from "antd";
 import React, { useEffect } from "react";
 import "../assets/style/categories.less";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
-
-import { UploadOutlined } from "@ant-design/icons";
-import _, { set } from "lodash";
+import { UploadOutlined, CloseOutlined, EditOutlined } from "@ant-design/icons";
 const AdminMangeCategories = () => {
   const [state, setState] = React.useState({
     isLoaded: false,
@@ -45,13 +41,13 @@ const AdminMangeCategories = () => {
       dataIndex: "fields",
       key: "fields",
 
-      render: (record, row, index) => {
+      render: (record) => {
         return <Typography.Text>{record.length}</Typography.Text>;
       },
     },
     {
       title: "Action",
-      render: (record, row, index) => {
+      render: (record) => {
         return (
           <Space>
             <Button type="primary" onClick={() => handleEdit(record)}>
@@ -106,7 +102,11 @@ const AdminMangeCategories = () => {
             <Col flex={1}>
               <Card
                 title="Categories"
-                extra={[<Button type="primary">Add Category</Button>]}
+                extra={[
+                  <Button key={0} type="primary">
+                    Add Category
+                  </Button>,
+                ]}
               >
                 <Table
                   key={1}
@@ -130,6 +130,17 @@ const EditCategoryForm = ({ category, setState, state }) => {
 
   useEffect(() => {}, [category]);
 
+  const onFinish = (values) => {
+    console.log({ values });
+  };
+
+  const convertObjectToArray = (obj) => {
+    return Object.entries(obj).map(([name, value]) => ({
+      name,
+      value: value.toString(),
+    }));
+  };
+
   return (
     <Card
       title={`Edit Category ${category.name}`}
@@ -145,215 +156,231 @@ const EditCategoryForm = ({ category, setState, state }) => {
         </Button>,
       ]}
     >
-      <Row gutter={[16, 16]}>
-        {category.fields.map((field, index) => {
-          return (
-            <Col span={24} key={index}>
-              <RenderFields field={field} index={index} />
-            </Col>
-          );
-        })}
-      </Row>
-    </Card>
-  );
-};
-
-const RenderFields = ({ field, index }) => {
-  const [fields, setFields] = React.useState([]);
-  const [form] = Form.useForm();
-  useEffect(() => {
-    if (field) {
-      let formFields = [];
-      formFields = convertObjectToArray(field);
-      setFields(formFields);
-    }
-  }, [field]);
-
-  const convertObjectToArray = (obj) => {
-    return Object.entries(obj).map(([name, value]) => ({
-      name,
-      value: value.toString(),
-    }));
-  };
-
-  return (
-    <Card title={field.label}>
-      <Form form={form} layout="vertical">
-        {fields.map((item, key) => {
-          return (
+      <Form form={form} layout="vertical" onFinish={onFinish} size="middle">
+        <Row gutter={[16, 16]}>
+          <Col span={12}>
             <Form.Item
-              key={key}
-              label={item.name}
-              name={["fields", key, item.name]}
-              initialValue={item.value}
+              label="Name"
+              name={["category", "name"]}
+              initialValue={category.name}
+              rules={[{ required: true, message: "Please enter name" }]}
             >
-              {item.name === "type" ? (
-                <Select
-                  options={[
-                    { label: "Text", value: "text" },
-                    { label: "Number", value: "number" },
-                    { label: "Email", value: "email" },
-                    { label: "Date", value: "date" },
-                    { label: "Time", value: "time" },
-                    { label: "Select", value: "select" },
-                    { label: "Textarea", value: "textarea" },
-                    { label: "File", value: "file" },
-                    { label: "Switch", value: "switch" },
-                  ]}
-                />
-              ) : item.name === "options" ? (
-                <Select
-                defaultValue={field.options}
-                mode="multiple"
-                  options={field.options.map((option) => {
-                    return { label: option.label, value: option.value };
-                  })}
-                />
-              ) : (
-                <Input />
-              )}
+              <Input placeholder="Enter Name" />
             </Form.Item>
-          );
-        })}
+          </Col>
+        </Row>
+        <Row gutter={[16, 16]} align="stretch">
+          {category.fields.map((attributes, index) => {
+            return (
+              <Col span={24} key={index}>
+                <RenderFields attributes={attributes} index={index} />
+              </Col>
+            );
+          })}
+          <Col span={24}>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Save
+              </Button>
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
     </Card>
   );
 };
 
-const categorySchema = {
-  name: "Food",
-  icon: "emoji-food-beverage",
-  description: "Food",
-  id: 1,
-  fields: [
-    {
-      name: "title",
-      placeholder: "Enter Title",
-      label: "Title",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "description",
-      placeholder: "Enter Description",
-      label: "Description",
-      type: "textarea",
-      required: true,
-    },
-    {
-      options: [
-        {
-          label: "Wanted",
-          value: "wanted",
-        },
-        {
-          label: "Ready to Offer",
-          value: "available",
-        },
-      ],
-      name: "Type",
-      placeholder: "Select Listings Type",
-      label: "Listings Type",
-      type: "select",
-      required: true,
-    },
-    {
-      options: [
-        {
-          label: "Veg",
-          value: "veg",
-        },
-        {
-          label: "Non-Veg",
-          value: "non-veg",
-        },
-        {
-          label: "Both",
-          value: "both",
-        },
-      ],
-      name: "foodType",
-      placeholder: "Select Food Type",
-      label: "Food Type",
-      type: "select",
-      required: true,
-    },
-    {
-      name: "quantity",
-      placeholder: "Enter Quantity",
-      label: "Quantity",
-      type: "number",
-      required: true,
-    },
-    {
-      name: "expiryDate",
-      placeholder: "Enter Expiry Date",
-      label: "Expiry Date",
-      type: "date",
-      required: true,
-    },
-    {
-      name: "pickupAddress",
-      placeholder: "Enter Pickup Address",
-      label: "Pickup Address",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "pickupDate",
-      placeholder: "Enter Pickup Date",
-      label: "Pickup Date",
-      type: "date",
-      required: true,
-    },
-    {
-      name: "pickupTime",
-      placeholder: "Enter Pickup Time",
-      label: "Pickup Time",
-      type: "time",
-      required: true,
-    },
-    {
-      name: "pickupInstruction",
-      placeholder: "Enter Pickup Instruction",
-      label: "Pickup Instruction",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "contactPerson",
-      placeholder: "Enter Contact Person",
-      label: "Contact Person",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "contactNumber",
-      placeholder: "Enter Contact Number",
-      label: "Contact Number",
-      type: "number",
-      required: true,
-    },
-    {
-      name: "contactEmail",
-      placeholder: "Enter Contact Email",
-      label: "Contact Email",
-      type: "email",
-      required: true,
-    },
-    {
-      name: "foodImage",
-      placeholder: "Upload Food Image",
-      label: "Food Image",
-      type: "file",
-      required: true,
-    },
-    {
-      name: "foodImage",
-      placeholder: "Upload Food Image",
-      label: "Food Image",
-      type: "file",
-      required: true,
-    },
-  ],
+const RenderFields = ({ attributes }) => {
+  return attributes.type === "text" ? (
+    <Row gutter={[16, 16]} align="middle" justify="space-around">
+      <Col span={20}>
+        <Form.Item
+          label={attributes.label}
+          name={["category", "fields", attributes.name, "value"]}
+          initialValue={attributes.value || ""}
+          rules={[
+            {
+              required: attributes.required || false,
+              message: `Please enter ${attributes.label}`,
+            },
+          ]}
+        >
+          <Input placeholder={attributes.placeholder} />
+        </Form.Item>
+      </Col>
+      <Col span={4}>
+        <ActionButtons attributes={attributes} />
+      </Col>
+    </Row>
+  ) : attributes.type === "number" ? (
+    <Row gutter={[16, 16]} align="middle" justify="space-around">
+      <Col span={20}>
+        <Form.Item
+          label={attributes.label}
+          name={["category", "fields", attributes.name, "value"]}
+          initialValue={attributes.value || ""}
+          rules={[
+            {
+              required: attributes.required || false,
+              message: `Please enter ${attributes.label}`,
+            },
+          ]}
+        >
+          <Input type="number" placeholder={attributes.placeholder} />
+        </Form.Item>
+      </Col>
+      <Col span={4}>
+        <ActionButtons attributes={attributes} />
+      </Col>
+    </Row>
+  ) : attributes.type === "select" ? (
+    <Row gutter={[16, 16]} align="middle" justify="space-around">
+      <Col span={20}>
+        <Form.Item
+          label={attributes.label}
+          name={["category", "fields", attributes.name, "value"]}
+          initialValue={attributes.value || ""}
+          rules={[
+            {
+              required: attributes.required || false,
+              message: `Please enter ${attributes.label}`,
+            },
+          ]}
+        >
+          <Select
+            placeholder={attributes.placeholder}
+            options={attributes.options}
+          />
+        </Form.Item>
+      </Col>
+      <Col span={4}>
+        <ActionButtons attributes={attributes} />
+      </Col>
+    </Row>
+  ) : attributes.type === "textarea" ? (
+    <Row gutter={[16, 16]} align="middle" justify="space-around">
+      <Col span={20}>
+        <Form.Item
+          label={attributes.label}
+          name={["category", "fields", attributes.name, "value"]}
+          initialValue={attributes.value || ""}
+          rules={[
+            {
+              required: attributes.required || false,
+              message: `Please enter ${attributes.label}`,
+            },
+          ]}
+        >
+          <Input.TextArea
+            rows={5}
+            placeholder={attributes.placeholder}
+          ></Input.TextArea>
+        </Form.Item>
+      </Col>
+      <Col span={4}>
+        <ActionButtons attributes={attributes} />
+      </Col>
+    </Row>
+  ) : attributes.type === "file" ? (
+    <Row gutter={[16, 16]} align="middle" justify="space-around">
+      <Col span={20}>
+        <Form.Item
+          label={attributes.label}
+          name={["category", "fields", attributes.name, "value"]}
+          initialValue={attributes.value || ""}
+          rules={[
+            {
+              required: attributes.required || false,
+              message: `Please enter ${attributes.label}`,
+            },
+          ]}
+        >
+          <Upload>
+            <Button icon={<UploadOutlined />}>{attributes.placeholder}</Button>
+          </Upload>
+        </Form.Item>
+      </Col>
+      <Col span={4}>
+        <ActionButtons attributes={attributes} />
+      </Col>
+    </Row>
+  ) : attributes.type === "date" ? (
+    <Row gutter={[16, 16]} align="middle" justify="space-around">
+      <Col span={20}>
+        <Form.Item
+          label={attributes.label}
+          name={["category", "fields", attributes.name, "value"]}
+          initialValue={attributes.value || ""}
+          rules={[
+            {
+              required: attributes.required || false,
+              message: `Please enter ${attributes.label}`,
+            },
+          ]}
+        >
+          <DatePicker placeholder={attributes.placeholder} />
+        </Form.Item>
+      </Col>
+      <Col span={4}>
+        <ActionButtons attributes={attributes} />
+      </Col>
+    </Row>
+  ) : null;
+};
+
+const ActionButtons = ({ attributes }) => {
+  const [show, setShow] = React.useState(false);
+  const showEditField = () => {
+    setShow(true);
+  };
+  return (
+    <Space>
+      <Button
+        icon={<EditOutlined />}
+        type="ghost"
+        shape="round"
+        onClick={() => showEditField(attributes)}
+      />
+      <Button
+        icon={<CloseOutlined />}
+        type="ghost"
+        shape="round"
+        danger
+        onClick={() => null}
+      />
+      <Drawer
+        title={`Edit ${attributes.label}`}
+        placement="right"
+        closable={true}
+        onClose={() => setShow(false)}
+        open={show}
+        width={500}
+      >
+        <Form layout="vertical" size="middle">
+          <Row gutter={[16, 16]}>
+            <Col span={24}>
+              <Form.Item
+                label="Label"
+                name="label"
+                initialValue={attributes.label}
+                rules={[{ required: true, message: "Please enter label" }]}
+              >
+                <Input placeholder="Enter Label" />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item
+                label="Name"
+                name="name"
+                initialValue={attributes.name}
+                rules={[{ required: true, message: "Please enter name" }]}
+              >
+                <Input placeholder="Enter Name" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Drawer>
+    </Space>
+  );
 };

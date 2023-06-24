@@ -1,22 +1,22 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
-    isLoaded: false,
-    data: []
-}
+  isLoaded: false,
+  data: []
+};
 
 
 const categoriesSlice = createSlice({
-    name: 'auth',
-    initialState,
-    reducers: {
-        updateCategories: (state, action) => {
-            return {
-                isLoaded: true,                
-                data:action.payload
-            }
-        }
+  name: 'auth',
+  initialState,
+  reducers: {
+    updateCategories: (state, action) => {
+      return {
+        isLoaded: true,                
+        data:action.payload
+      };
     }
-})
+  }
+});
 
-export const { updateCategories } = categoriesSlice.actions
-export default categoriesSlice.reducer
+export const { updateCategories } = categoriesSlice.actions;
+export default categoriesSlice.reducer;

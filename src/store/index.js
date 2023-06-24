@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit';
 import promise from 'redux-promise';
 import { combineReducers, compose  } from 'redux';
 import authSlice from './reducers/auth';
@@ -19,4 +19,4 @@ export const store = configureStore({
   }).concat(promise),
 
   devTools: composeEnhancers
-})
+});
