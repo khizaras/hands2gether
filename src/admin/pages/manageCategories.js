@@ -11,14 +11,25 @@ import {
   Select,
   DatePicker,
   Upload,
+  Tabs,
   Drawer,
 } from "antd";
+import Editor from "@monaco-editor/react";
 import React, { useEffect } from "react";
 import "../assets/style/categories.less";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { useSelector } from "react-redux";
-import { UploadOutlined, CloseOutlined, EditOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { UploadOutlined } from "@ant-design/icons";
+import { useRef } from "react";
+import {
+  createCategoryApi,
+  getCategories,
+  updateCategoryApi,
+} from "../../api/categories";
+import { updateCategories } from "../../store/reducers/categories";
+
 const AdminMangeCategories = () => {
+  const dispatch = useDispatch();
   const [state, setState] = React.useState({
     isLoaded: false,
     showEditForm: false,
@@ -66,6 +77,14 @@ const AdminMangeCategories = () => {
   };
   const categories = useSelector((state) => state.categories);
 
+  const addCategory = (values) => {
+    createCategoryApi(values.category).then(() => {
+      getCategories().then((categories) => {
+        dispatch(updateCategories(categories));
+      });
+    });
+  };
+
   useEffect(() => {
     if (categories.isLoaded) {
       setState({ isLoaded: true });
@@ -103,7 +122,11 @@ const AdminMangeCategories = () => {
               <Card
                 title="Categories"
                 extra={[
-                  <Button key={0} type="primary">
+                  <Button
+                    key={0}
+                    type="primary"
+                    onClick={() => setState({ ...state, ShowAddForm: true })}
+                  >
                     Add Category
                   </Button>,
                 ]}
@@ -119,6 +142,36 @@ const AdminMangeCategories = () => {
           </Row>
         )}
       </div>
+      <Drawer
+        title="Add Category"
+        placement="right"
+        closable={true}
+        onClose={() => setState({ ...state, ShowAddForm: false })}
+        open={state.ShowAddForm}
+        width={500}
+      >
+        <Form layout="vertical" size="middle" onFinish={addCategory}>
+          <Form.Item
+            label="Name"
+            name={["category", "name"]}
+            rules={[{ required: true, message: "Please enter name" }]}
+          >
+            <Input placeholder="Enter Name" />
+          </Form.Item>
+          <Form.Item
+            label="Description"
+            name={["category", "description"]}
+            rules={[{ required: true, message: "Please enter description" }]}
+          >
+            <Input.TextArea rows={5} placeholder="Enter Description" />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Save
+            </Button>
+          </Form.Item>
+        </Form>
+      </Drawer>
     </section>
   );
 };
@@ -127,31 +180,74 @@ export default AdminMangeCategories;
 
 const EditCategoryForm = ({ category, setState, state }) => {
   const [form] = Form.useForm();
-
-  useEffect(() => {}, [category]);
-
-  const onFinish = (values) => {
-    console.log({ values });
+  const editorRef = useRef(null);
+  const [fields, setFields] = React.useState(category.fields);
+  const [activeKey, setActiveKey] = React.useState("1");
+  const handleEditorDidMount = (editor) => {
+    editorRef.current = editor;
   };
 
+  const onFinish = (values) => {
+    const data = {
+      _id: category._id,
+      ...values.category,
+      fields: JSON.parse(editorRef.current.getValue()),
+    };
+
+    updateCategoryApi(data).then((res) => {
+      console.log({ data, res });
+    });
+  };
+  const preview = () => {
+    const newfields = editorRef.current.getValue();
+    setFields(JSON.parse(newfields));
+    setActiveKey("2");
+  };
+
+  const tabItems = [
+    {
+      key: "1",
+      label: "Fields",
+      children: (
+        <Editor
+          height="90vh"
+          defaultLanguage="json"
+          defaultValue={JSON.stringify(fields, null, 4)}
+          onMount={handleEditorDidMount}
+        />
+      ),
+    },
+    {
+      key: "2",
+      label: "Preview",
+      children: fields.map((attributes, index) => (
+        <RenderFields key={index} attributes={attributes} index={index} />
+      )),
+    },
+  ];
+
   return (
-    <Card
-      title={`Edit Category ${category.name}`}
-      extra={[
-        <Button
-          key={0}
-          danger
-          type="primary"
-          onClick={() =>
-            setState({ ...state, showEditForm: false, record: {} })
-          }
-        >
-          Cancel
-        </Button>,
-      ]}
-      className="edit-category-form"
-    >
-      <Form form={form} layout="vertical" onFinish={onFinish} size="middle">
+    <Form form={form} layout="vertical" onFinish={onFinish} size="middle">
+      <Card
+        title={`Edit Category ${category.name}`}
+        extra={
+          <Space size={10}>
+            <Button type="primary" htmlType="submit">
+              Save
+            </Button>
+            <Button
+              danger
+              type="primary"
+              onClick={() =>
+                setState({ ...state, showEditForm: false, record: {} })
+              }
+            >
+              Cancel
+            </Button>
+          </Space>
+        }
+        className="edit-category-form"
+      >
         <Form.Item
           label="Name"
           name={["category", "name"]}
@@ -168,16 +264,19 @@ const EditCategoryForm = ({ category, setState, state }) => {
         >
           <Input.TextArea rows={5} placeholder="Enter Description" />
         </Form.Item>
-        {category.fields.map((attributes, index) => (
-          <RenderFields key={index} attributes={attributes} index={index} />
-        ))}
+        <Tabs
+          onChange={preview}
+          type="card"
+          defaultActiveKey={[activeKey]}
+          items={tabItems}
+        />
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Save
           </Button>
         </Form.Item>
-      </Form>
-    </Card>
+      </Card>
+    </Form>
   );
 };
 
