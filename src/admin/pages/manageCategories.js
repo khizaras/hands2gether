@@ -179,6 +179,7 @@ const AdminMangeCategories = () => {
 export default AdminMangeCategories;
 
 const EditCategoryForm = ({ category, setState, state }) => {
+  const dispatch = useDispatch();
   const [form] = Form.useForm();
   const editorRef = useRef(null);
   const [fields, setFields] = React.useState(category.fields);
@@ -194,8 +195,11 @@ const EditCategoryForm = ({ category, setState, state }) => {
       fields: JSON.parse(editorRef.current.getValue()),
     };
 
-    updateCategoryApi(data).then((res) => {
-      console.log({ data, res });
+    updateCategoryApi(data).then(() => {
+      getCategories().then((categories) => {
+        dispatch(updateCategories(categories));
+      });
+      setState({ ...state, showEditForm: false, record: {} });
     });
   };
   const preview = () => {
