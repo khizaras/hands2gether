@@ -24,15 +24,16 @@ import { ImList, ImTable } from "react-icons/im";
 import { useSelector } from "react-redux";
 import LocationPickerPopup from "./components/locationPicker";
 
-import { getItemIcon } from "../api/categories";
 import banner1 from "./assets/images/banner1.png";
 import banner2 from "./assets/images/banner2.png";
+import { RenderIcon } from "../api/categories";
 
 const { Header, Content } = Layout;
 
 const Hands2GetherSite = () => {
   const user = useSelector((state) => state.user);
   const categories = useSelector((state) => state.categories);
+
   useEffect(() => {
     if (categories.isLoaded) {
       setState({ isCategoriesLoaded: true });
@@ -65,20 +66,18 @@ const Hands2GetherSite = () => {
               </Col>
               <Col flex={0} xs={0} sm={8}>
                 <Space size={20} align="start">
-                  <Button type="link">
-                    <MailOutlined /> Hands2gether@gmail.com{" "}
-                  </Button>
+                  <Button type="link" icon={<MailOutlined />}>Hands2gether@gmail.com</Button>
                   <Space align="start">
                     <Avatar
                       size={45}
                       style={{ backgroundColor: "#f5f5f5" }}
-                      icon={<UserOutlined />}
+                      icon={ user.isAuth ? user.photoURL && <img src={user.photoURL} /> :  <UserOutlined />}
                     />
                     <Typography.Text
                       ellipsis={{ suffix: "", tooltip: "John Doe" }}
                       strong
                     >
-                      John Doe
+                      { user.isAuth ? user.displayName : "Guest" }
                     </Typography.Text>
                   </Space>
                 </Space>
@@ -153,7 +152,7 @@ const Hands2GetherSite = () => {
                   {categories.data.map((item, index) => (
                     <div className="category-item" key={index}>
                       <div className="category-item-image">
-                        {getItemIcon(item.name)}
+                        <RenderIcon icon={item.icon} />
                       </div>
                       <div className="category-item-title">
                         <Typography.Title level={4}>

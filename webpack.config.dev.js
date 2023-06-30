@@ -19,6 +19,7 @@ var BUILD_DIR = path.resolve(__dirname, 'build/');
 module.exports = {
   stats: 'errors-only',
   mode: 'development',
+  devtool: 'source-map',
   entry: {
     main: APP_DIR + '/index.js',
   },

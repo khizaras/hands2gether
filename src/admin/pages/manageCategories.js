@@ -22,6 +22,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { UploadOutlined } from "@ant-design/icons";
 import { useRef } from "react";
 import {
+  RenderIcon,
+  cateGoriesIconsList,
   createCategoryApi,
   getCategories,
   updateCategoryApi,
@@ -73,7 +75,7 @@ const AdminMangeCategories = () => {
     },
   ];
   const handleEdit = (record) => {
-    setState({ ...state, showEditForm: true, record });
+    setState({ ...state, showEditForm: true, record,  icon:record.icon });
   };
   const categories = useSelector((state) => state.categories);
 
@@ -192,6 +194,7 @@ const EditCategoryForm = ({ category, setState, state }) => {
     const data = {
       _id: category._id,
       ...values.category,
+      icon:state?.icon || "LuBraces" ,
       fields: JSON.parse(editorRef.current.getValue()),
     };
 
@@ -213,45 +216,52 @@ const EditCategoryForm = ({ category, setState, state }) => {
       key: "1",
       label: "Fields",
       children: (
-        <Editor
-          height="90vh"
-          defaultLanguage="json"
-          defaultValue={JSON.stringify(fields, null, 4)}
-          onMount={handleEditorDidMount}
-        />
+        <div>
+          <Editor
+            height="90vh"
+            defaultLanguage="json"
+            defaultValue={JSON.stringify(fields, null, 4)}
+            onMount={handleEditorDidMount}
+          />
+          <IconsSelector setState={setState} state={state} />
+        </div>
       ),
     },
     {
       key: "2",
       label: "Preview",
-      children: fields.map((attributes, index) => (
-        <RenderFields key={index} attributes={attributes} index={index} />
-      )),
+      children: (
+        <Form layout="vertical" size="large">
+          {fields.map((attributes, index) => (
+            <RenderFields key={index} attributes={attributes} index={index} />
+          ))}
+        </Form>
+      ),
     },
   ];
 
   return (
-    <Form form={form} layout="vertical" onFinish={onFinish} size="middle">
-      <Card
-        title={`Edit Category ${category.name}`}
-        extra={
-          <Space size={10}>
-            <Button type="primary" htmlType="submit">
-              Save
-            </Button>
-            <Button
-              danger
-              type="primary"
-              onClick={() =>
-                setState({ ...state, showEditForm: false, record: {} })
-              }
-            >
-              Cancel
-            </Button>
-          </Space>
-        }
-        className="edit-category-form"
-      >
+    <Card
+      title={`Edit Category ${category.name}`}
+      extra={
+        <Space size={10}>
+          <Button type="primary" onClick={() => form.submit()}>
+            Save
+          </Button>
+          <Button
+            danger
+            type="primary"
+            onClick={() =>
+              setState({ ...state, showEditForm: false, record: {} })
+            }
+          >
+            Cancel
+          </Button>
+        </Space>
+      }
+      className="edit-category-form"
+    >
+      <Form form={form} layout="vertical" onFinish={onFinish} size="middle">
         <Form.Item
           label="Name"
           name={["category", "name"]}
@@ -268,19 +278,14 @@ const EditCategoryForm = ({ category, setState, state }) => {
         >
           <Input.TextArea rows={5} placeholder="Enter Description" />
         </Form.Item>
-        <Tabs
-          onChange={preview}
-          type="card"
-          defaultActiveKey={[activeKey]}
-          items={tabItems}
-        />
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Save
-          </Button>
-        </Form.Item>
-      </Card>
-    </Form>
+      </Form>
+      <Tabs
+        onChange={preview}
+        type="card"
+        defaultActiveKey={[activeKey]}
+        items={tabItems}
+      />
+    </Card>
   );
 };
 
@@ -292,7 +297,7 @@ const RenderFields = ({ attributes }) => {
       initialValue={attributes.value || ""}
       rules={[
         {
-          required: attributes.required || false,
+          required: false,
           message: `Please enter ${attributes.label}`,
         },
       ]}
@@ -306,7 +311,7 @@ const RenderFields = ({ attributes }) => {
       initialValue={attributes.value || ""}
       rules={[
         {
-          required: attributes.required || false,
+          required: false,
           message: `Please enter ${attributes.label}`,
         },
       ]}
@@ -320,7 +325,7 @@ const RenderFields = ({ attributes }) => {
       initialValue={attributes.value || ""}
       rules={[
         {
-          required: attributes.required || false,
+          required: false,
           message: `Please enter ${attributes.label}`,
         },
       ]}
@@ -337,7 +342,7 @@ const RenderFields = ({ attributes }) => {
       initialValue={attributes.value || ""}
       rules={[
         {
-          required: attributes.required || false,
+          required: false,
           message: `Please enter ${attributes.label}`,
         },
       ]}
@@ -354,7 +359,7 @@ const RenderFields = ({ attributes }) => {
       initialValue={attributes.value || ""}
       rules={[
         {
-          required: attributes.required || false,
+          required: false,
           message: `Please enter ${attributes.label}`,
         },
       ]}
@@ -370,7 +375,7 @@ const RenderFields = ({ attributes }) => {
       initialValue={attributes.value || ""}
       rules={[
         {
-          required: attributes.required || false,
+          required: false,
           message: `Please enter ${attributes.label}`,
         },
       ]}
@@ -379,3 +384,21 @@ const RenderFields = ({ attributes }) => {
     </Form.Item>
   ) : null;
 };
+
+
+
+const IconsSelector = ({setState, state}) => {
+  return (
+    <div className="icons-selector">
+      {cateGoriesIconsList.map((icon, index) => (
+        <div key={index} className={state.icon === icon ? "icon-item selected" : "icon-item" } onClick={()=>setState({...state, icon})} >
+          <div className="icon">
+            <RenderIcon icon={icon} />
+          </div>
+          <div className="name">{icon}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+

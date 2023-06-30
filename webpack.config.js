@@ -5,42 +5,48 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 //const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-const NODE_ENV = "production"
+const NODE_ENV = "production";
 const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
-  template: path.join(__dirname, '../public/index.html'), 
+  template: path.join(__dirname, "public/index.html"),
   filename: "index.html",
-  inject: "body"
+  inject: "body",
 });
 
-
-console.log("---------------------- WEBPACK ------------------")
+var APP_DIR = path.resolve(__dirname, "src/");
+var BUILD_DIR = path.resolve(__dirname, "build/");
+const webpack = require('webpack');
+console.log("---------------------- WEBPACK ------------------");
 console.info({
-  environment: NODE_ENV
-})
-console.log("---------------------- WEBPACK ------------------")
+  environment: NODE_ENV,
+});
+console.log("---------------------- WEBPACK ------------------");
 module.exports = {
   resolve: {
     fallback: {
-      "crypto": require.resolve("crypto-browserify"),
-      "buffer": require.resolve("buffer"),
-      "stream": require.resolve('stream-browserify')
+      crypto: require.resolve("crypto-browserify"),
+      buffer: require.resolve("buffer"),
+      stream: require.resolve("stream-browserify"),
     },
   },
   stats: {
-    errorDetails: true
+    errorDetails: true,
   },
-  devtool: false,
-  mode: NODE_ENV,//"production",
-  //watch: true,
+  devtool: 'source-map',
+  mode: 'production',
   entry: {
-    main: path.resolve(__dirname, 'index.js'),
+    main: APP_DIR + "/index.js",
   },
   output: {
-    //path: path.resolve("dist")
+    publicPath: "/",
     clean: true,
     pathinfo: true,
-    path: path.resolve(__dirname, '../build'),
-    publicPath: '/'
+    path: BUILD_DIR,
+    filename: (pathData) => {
+      return pathData.chunk.name === "main" ? "[name].js" : "[name]/[name].js";
+    },
+    chunkFilename: "[name].js",
+    assetModuleFilename: "images/[name][ext]",
+    
   },
   module: {
     rules: [
@@ -48,19 +54,19 @@ module.exports = {
         test: /\.less$/,
         use: [
           {
-            loader: 'style-loader',
+            loader: "style-loader",
           },
           {
-            loader: 'css-loader',
+            loader: "css-loader",
           },
           {
-            loader: 'less-loader',
+            loader: "less-loader",
             options: {
               lessOptions: {
-               /*  modifyVars: {
+                /*  modifyVars: {
                   '@ant-theme-file': "; @import '" + path.resolve(__dirname, './client/src/fci/assets/css/index.less',) + "'",
                 }, */
-                javascriptEnabled: true
+                javascriptEnabled: true,
               },
             },
           },
@@ -75,11 +81,11 @@ module.exports = {
             loader: "postcss-loader",
             options: {
               postcssOptions: {
-                plugins: () => [require("autoprefixer")]
-              }
-            }
-          }
-        ]
+                plugins: () => [require("autoprefixer")],
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.js$/,
@@ -87,18 +93,19 @@ module.exports = {
         use: {
           loader: "babel-loader",
           options: {
-            presets: ['@babel/react']
-          }
-        }
-      }, {
+            presets: ["@babel/react"],
+          },
+        },
+      },
+      {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
           options: {
-            presets: ['@babel/react']
-          }
-        }
+            presets: ["@babel/react"],
+          },
+        },
       },
       {
         test: /\.(js|jsx)$/,
@@ -106,68 +113,71 @@ module.exports = {
         use: {
           loader: "babel-loader",
           options: {
-            presets: ['@babel/react']
-          }
-        }
+            presets: ["@babel/react"],
+          },
+        },
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
-        type: 'asset/resource',
+        type: "asset/resource",
         generator: {
-          filename: 'fonts/[name].[ext]',
-        }
+          filename: "fonts/[name].[ext]",
+        },
       },
       {
         test: /\.(png|jpe?g|gif|svg)$/i,
-        loader: 'file-loader',
+        loader: "file-loader",
         options: {
           name(resourcePath, resourceQuery) {
-            return 'images/[name].[ext]';
+            return "images/[name].[ext]";
           },
         },
       },
       {
         exclude: /node_modules/,
         test: /\.js/,
-        use: [
-          { loader: 'babel-loader' }
-        ]
-      }
-    ]
+        use: [{ loader: "babel-loader" }],
+      },
+    ],
   },
-  plugins: [HtmlWebpackPluginConfig],
+  plugins: [
+    HtmlWebpackPluginConfig,
+    new webpack.ProgressPlugin(),
+
+  ],
   optimization: {
     splitChunks: {
-      chunks: 'all',
+      chunks: "all",
       minSize: 20000,
       maxSize: 900000,
       minChunks: 1,
       maxAsyncRequests: 30,
       maxInitialRequests: 30,
-      automaticNameDelimiter: '-',
+      automaticNameDelimiter: "-",
       enforceSizeThreshold: 50000,
       cacheGroups: {
         defaultVendors: {
           test: /[\\/]node_modules[\\/]/,
-          priority: -10
+          priority: -10,
         },
         default: {
           minChunks: 2,
           priority: -20,
-          reuseExistingChunk: true
-        }
-      }
+          reuseExistingChunk: true,
+        },
+      },
     },
     minimizer: [
       new UglifyJsPlugin({
         parallel: 10,
         test: /\.js($|\?)/i,
-        sourceMap: true,
+        sourceMap: false,
         uglifyOptions: {
           warnings: false,
-          keep_fnames: false
+          keep_fnames: false,
         },
-      })
-    ]
-  }
+      }),
+
+    ],
+  },
 };

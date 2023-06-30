@@ -67,7 +67,7 @@
   "scripts": {
     "start": "serve  -s ./build/",
     "dev": "webpack serve --config ./webpack.config.dev",
-    "build": "npm run clean && webpack --config ./webpack.config.js",
+    "build": "webpack --config ./webpack.config.js",
     "test": "cypress open",
     "release": "amplify publish",
     "lint": "eslint src/**/*.{js,jsx} --fix --quiet"
