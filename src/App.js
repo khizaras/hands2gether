@@ -13,6 +13,7 @@ import { getLocation } from "./api/location";
 import { updateAuth, updateGeolocation } from "./store/reducers/auth";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
+
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -34,8 +35,8 @@ const App = () => {
   };
 
   return (
-    <Router>
-      <Hands2GetherSite path="/" user={user} />
+    <Router basepath="/">
+      <Hands2GetherSite path="/*" />
       <H2GLoginPage path="/login/*" />
       <H2GAdminPage path="/admin/*" />
     </Router>
