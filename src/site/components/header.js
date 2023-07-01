@@ -1,24 +1,83 @@
 import React from "react";
 import {
   Layout,
-  Button,
+  Dropdown,
   Row,
   Col,
   Space,
   Avatar,
   Typography,
   Menu,
+  Modal,
 } from "antd";
 
 import logo from "../assets/images/logo.png";
-import { UserOutlined, MailOutlined, MenuOutlined } from "@ant-design/icons";
+import { UserOutlined, MenuOutlined } from "@ant-design/icons";
 
 import { Link } from "@gatsbyjs/reach-router";
 import { useSelector } from "react-redux";
-
+import { getAuth, signOut } from "firebase/auth";
+import { updateAuth } from "../../store/reducers/auth";
+import { navigate } from "@gatsbyjs/reach-router";
+import { useDispatch } from "react-redux";
 const { Header } = Layout;
 const Hands2getherPrimaryHeader = () => {
   const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  const getUserMenu = () => {
+    let items = [];
+    if (user.isAuth) {
+      items.push(
+        {
+          key: "1",
+          label: <Link to="/user">My Account</Link>,
+        },
+        {
+          key: "2",
+          label: (
+            <a style={{ cursor: "pointer" }} onClick={() => logOut()}>
+              Logout
+            </a>
+          ),
+        }
+      );
+    } else {
+      items.push(
+        {
+          key: "1",
+          label: <Link to="/login">Login</Link>,
+        },
+        {
+          key: "2",
+          label: <Link to="/register">Register</Link>,
+        }
+      );
+    }
+    console.log({ items });
+    return { items };
+  };
+
+  const logOut = () => {
+    console.log("logOut");
+    Modal.confirm({
+      title: "Do you want to logout?",
+      icon: <UserOutlined />,
+      content: "You will be logged out of your account.",
+      onOk: () => {
+        signOut(getAuth()).then(() => {
+          logoutSuccess();
+        });
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
+  };
+  const logoutSuccess = () => {
+    dispatch(updateAuth({ isAuth: false }));
+    navigate("/login");
+  };
 
   return (
     <Header className="site-header">
@@ -29,7 +88,7 @@ const Hands2getherPrimaryHeader = () => {
               <img src={logo} height={60} />
             </div>
           </Col>
-          <Col flex={1} xs={2} sm={12} md={8} lg={12}>
+          <Col flex={1} xs={2} sm={12} md={8} lg={16}>
             <Menu
               mode="horizontal"
               items={[
@@ -41,9 +100,9 @@ const Hands2getherPrimaryHeader = () => {
               overflowedIndicator={<MenuOutlined />}
             />
           </Col>
-          <Col className="user-context" flex={0} xs={0} sm={4}  md={4}  lg={8}>
-            <Space align="start">
-              <Link to={user.isAuth ? "/user" : "/"}>
+          <Col className="user-context" flex={0} xs={0} sm={4} md={4} lg={4}>
+            <Dropdown menu={getUserMenu()} trigger={["hover"]}>
+              <Space align="start" style={{ cursor: "pointer" }}>
                 <Avatar
                   size={45}
                   style={{ backgroundColor: "#f5f5f5" }}
@@ -55,13 +114,11 @@ const Hands2getherPrimaryHeader = () => {
                     )
                   }
                 />
-              </Link>
-              <Link to={user.isAuth ? "/user" : "/"}>
                 <Typography.Text strong>
                   {user.isAuth ? user.displayName : "Guest"}
                 </Typography.Text>
-              </Link>
-            </Space>
+              </Space>
+            </Dropdown>
           </Col>
         </Row>
       </div>

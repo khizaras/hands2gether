@@ -10,7 +10,6 @@ import {
   Divider,
   notification,
   Steps,
-  message,
   Switch,
   ConfigProvider,
 } from "antd";
@@ -18,7 +17,7 @@ import { GoogleOutlined } from "@ant-design/icons";
 import "./login.less";
 import logo from "../assets/images/logo-white.png";
 import login from "../assets/images/login.png";
-import wave from "../assets/images/wave.png";
+
 import { useDispatch } from "react-redux";
 import {
   getAuth,
@@ -84,7 +83,7 @@ const H2GLoginPage = () => {
   const loginSuccess = ({ user, type }) => {
     setState({ ...state, isAuth: true });
     dispatch(updateAuth({ isAuth: true, ...user, type }));
-    navigate("/")
+    navigate("/");
   };
 
   const items = [
