@@ -1,18 +1,35 @@
 import React from "react";
-import { Card, Col, Layout, Menu, Row, Typography } from "antd";
+import {
+  Avatar,
+  Card,
+  Col,
+  Divider,
+  Layout,
+  Menu,
+  Row,
+  Space,
+  Statistic,
+  Typography,
+} from "antd";
 import { LuUser, LuHome } from "react-icons/lu";
 import "./index.less";
 import { Link } from "@gatsbyjs/reach-router";
+import { useSelector } from "react-redux";
+import { UserOutlined } from "@ant-design/icons";
+import moment from "moment";
+import { LuCheckCircle, LuLayoutList} from "react-icons/lu";
 const { Content } = Layout;
 
 const UserPage = () => {
+  const user = useSelector((state) => state.user);
+
   const items = [
     {
       key: "1",
       label: <Link to="/user">Home</Link>,
       icon: <LuHome />,
     },
-   
+
     {
       key: "2",
       label: <Link to="/user/profile">Profile</Link>,
@@ -24,11 +41,11 @@ const UserPage = () => {
       <div className="container">
         <section className="navigation">
           <Row justify="start" align="top" gutter={[16, 16]}>
-            <Col flex="0 1 256px">
+            <Col  xs={24} sm={24} md={6} lg={6} >
               <UserNavigation items={items} />
             </Col>
-            <Col flex="1 1 600px">
-              <OverviewSection />
+            <Col flex="1 1 600px"   xs={24} sm={24} md={18} lg={18}  >
+              <OverviewSection user={user} />
             </Col>
           </Row>
         </section>
@@ -44,9 +61,7 @@ const UserNavigation = ({ items }) => {
     <Card className="navigation-card">
       <Menu
         theme="light"
-        style={{
-          width: 256,
-        }}
+        
         defaultSelectedKeys={["1"]}
         defaultOpenKeys={["sub1"]}
         mode="inline"
@@ -56,22 +71,100 @@ const UserNavigation = ({ items }) => {
   );
 };
 
-const OverviewSection = () => {
+const OverviewSection = ({ user }) => {
+  const getTs = (ts) => {
+    let date = parseInt(ts);
+    return moment(date).format("LLL");
+  };
   return (
     <section className="overview">
-      <Card title="Overview">
+      <Card className="shadow">
         <Row gutter={[16, 16]}>
-          <Col flex={1}>
-            <Typography.Title level={4}>Profile</Typography.Title>
-            <Typography.Paragraph>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
-              voluptatum, quibusdam, quia, voluptates voluptate quod quos
-              voluptatibus quas doloribus quidem voluptas. Quisquam voluptatum,
-              </Typography.Paragraph>
+          <Col span={24}>
+            <Space size={20}>
+              <Avatar
+                size={85}
+                style={{ backgroundColor: "#f5f5f5" }}
+                icon={
+                  user.isAuth ? (
+                    user.photoURL && <img src={user.photoURL} />
+                  ) : (
+                    <UserOutlined />
+                  )
+                }
+              />
+              <Space direction="vertical" size={1}>
+                <Typography.Title level={3} strong>
+                  Hi {user.isAuth ? user.displayName : "Guest"}
+                </Typography.Title>
+                <Typography.Text type="secondary">
+                  Welcome to User profile page
+                </Typography.Text>
+                <Space size={20}>
+                  <Space>
+                    <Typography.Text level={5}>Member Since</Typography.Text>
+                    <Typography.Text level={5} strong>
+                      {user.isAuth
+                        ? moment(
+                            getTs(user?.metadata?.createdAt) ||
+                              moment().valueOf()
+                          ).format("LLL")
+                        : null}{" "}
+                    </Typography.Text>
+                  </Space>
+
+                  <Space>
+                    <Typography.Text level={5}>Status</Typography.Text>
+                    <Typography.Text level={5} strong>
+                      <LuCheckCircle
+                        style={{
+                          width: 20,
+                          height: 20,
+                          borderBlockColor: "green",
+                        }}
+                      />
+                    </Typography.Text>
+                  </Space>
+                </Space>
+              </Space>
+            </Space>
+          </Col>
+
+  
+          <Col span={24}>
+            <Divider />
+          </Col>
+          <Col span={24} className="stats">
+            <Row gutter={[16, 16]}>
+              <Col span={8}>
+                <Statistic 
+                  suffix="Listings"
+                  title="Listings"
+                  value={0}
+                  prefix={<LuLayoutList/>}
+                />
+              </Col>
+              <Col span={8}>
+                <Statistic 
+                  suffix="Listings"
+                  title="Listings"
+                  value={0}
+                  prefix={<LuLayoutList/>}
+                />
+              </Col>
+              <Col span={8}>
+                <Statistic 
+                  suffix="Listings"
+                  title="Listings"
+                  value={0}
+                  prefix={<LuLayoutList/>}
+                />
+              </Col>
+            </Row>
+
           </Col>
         </Row>
       </Card>
-
     </section>
-  )
-}
+  );
+};

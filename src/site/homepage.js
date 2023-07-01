@@ -4,10 +4,10 @@ import {
   Col,
   Space,
   Typography,
-  Carousel,
   Input,
   Radio,
   Spin,
+  Button,
 } from "antd";
 import "antd/dist/reset.css";
 import "./assets/style/index.less";
@@ -17,8 +17,7 @@ import { ImList, ImTable } from "react-icons/im";
 import { useSelector } from "react-redux";
 import LocationPickerPopup from "./components/locationPicker";
 import {Layout} from "antd";
-import banner1 from "./assets/images/banner1.png";
-import banner2 from "./assets/images/banner2.png";
+import banner1 from "./assets/images/h2g-banners.png";
 import { RenderIcon } from "../api/categories";
 
 
@@ -39,17 +38,40 @@ const Hands2getherHomepageContent = () => {
   });
   return (
     <section className="homepage-content">
-      <section className="banner-content">
+      <section className="banner-content" >
         <div className="container">
-          <Carousel autoplay arrows dots className="main-carousel">
-            <img src={banner1} />
+          <Row justify="center" align="middle" gutter={[16, 16]} className="bg-img" style={{background:`url('${banner1}')`}}>
+            <Col flex={1}>
+              <div className="banner-text">
+                  <Typography.Title level={1} style={{fontFamily:'Inkfree', fontSize:50, }}>Join your hands to help the </Typography.Title>
+                  <Typography.Title level={2} style={{fontFamily:'Inkfree',fontSize:60, }}>Needy ones</Typography.Title>
+                  <Button type="default" size="large">See Listings</Button>
+        
+              </div>
 
-            <img src={banner2} />
-          </Carousel>
+            </Col>
+          
+          </Row>            
         </div>
       </section>
       {state.isCategoriesLoaded ? (
         <Content className="site-home-content">
+              <section className="categories-section">
+            <div className="container">
+              <div className="categories-list">
+                {categories.data.map((item, index) => (
+                  <div className="category-item" key={index}>
+                    <div className="category-item-image">
+                      <RenderIcon icon={item.icon} />
+                    </div>
+                    <div className="category-item-title">
+                      <Typography.Title level={4}>{item.name}</Typography.Title>{" "}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
           <section className="search-placeholder">
             <div className="container">
               <Row justify="center" align="top" gutter={[16, 16]}>
@@ -85,22 +107,7 @@ const Hands2getherHomepageContent = () => {
               </Row>
             </div>
           </section>
-          <section className="categories-section">
-            <div className="container">
-              <div className="categories-list">
-                {categories.data.map((item, index) => (
-                  <div className="category-item" key={index}>
-                    <div className="category-item-image">
-                      <RenderIcon icon={item.icon} />
-                    </div>
-                    <div className="category-item-title">
-                      <Typography.Title level={4}>{item.name}</Typography.Title>{" "}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
+      
         </Content>
       ) : (
         <Spin size="large" />
