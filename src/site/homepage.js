@@ -155,6 +155,11 @@ const Hands2getherHomepageContent = () => {
                                 <Typography.Text> {item.category.name} </Typography.Text>
                                 </Space>
                               </Col>
+                              <Col span={8}>
+                                <Space direction="vertical" size={0} align="center">
+                                  
+                                </Space>
+                              </Col>
                            </Row>
                           </div>
 
