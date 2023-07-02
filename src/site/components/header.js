@@ -54,12 +54,12 @@ const Hands2getherPrimaryHeader = () => {
         }
       );
     }
-    console.log({ items });
+
     return { items };
   };
 
   const logOut = () => {
-    console.log("logOut");
+
     Modal.confirm({
       title: "Do you want to logout?",
       icon: <UserOutlined />,
@@ -70,7 +70,6 @@ const Hands2getherPrimaryHeader = () => {
         });
       },
       onCancel() {
-        console.log("Cancel");
       },
     });
   };

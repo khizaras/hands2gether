@@ -13,11 +13,12 @@ import {
 } from "antd";
 import { LuUser, LuHome } from "react-icons/lu";
 import "./index.less";
-import { Link } from "@gatsbyjs/reach-router";
+import { Link, Router } from "@gatsbyjs/reach-router";
 import { useSelector } from "react-redux";
 import { UserOutlined } from "@ant-design/icons";
 import moment from "moment";
-import { LuCheckCircle, LuLayoutList} from "react-icons/lu";
+import { LuCheckCircle, LuLayoutList,LuListChecks,LuBellRing} from "react-icons/lu";
+import UserAddListings from "./addListings";
 const { Content } = Layout;
 
 const UserPage = () => {
@@ -29,12 +30,37 @@ const UserPage = () => {
       label: <Link to="/user">Home</Link>,
       icon: <LuHome />,
     },
+    {
+      type: 'divider',
+    },
 
     {
       key: "2",
       label: <Link to="/user/profile">Profile</Link>,
       icon: <LuUser />,
     },
+    
+    {
+      key: "3",
+      label: "Listings",
+      icon: <LuListChecks/>,
+      children: [
+        {
+          key: "3.1",
+          label: <Link to="/user/addListings">Add Listings</Link>,          
+        },
+        {
+          key: "3.2",
+          label: <Link to="/user/myListings">My Listings</Link>,
+        }
+      ]
+    },
+    {
+      key: "4",
+      label: <Link to="/user/notifications">Notifications</Link>,
+      icon: <LuBellRing/>,
+    }
+
   ];
   return (
     <Content className="site-user-indexPage">
@@ -45,7 +71,10 @@ const UserPage = () => {
               <UserNavigation items={items} />
             </Col>
             <Col flex="1 1 600px"   xs={24} sm={24} md={18} lg={18}  >
-              <OverviewSection user={user} />
+              <Router>
+                <OverviewSection  user={user} path="/" />
+                <UserAddListings path="/addListings" />
+              </Router>
             </Col>
           </Row>
         </section>
@@ -62,8 +91,9 @@ const UserNavigation = ({ items }) => {
       <Menu
         theme="light"
         
-        defaultSelectedKeys={["1"]}
-        defaultOpenKeys={["sub1"]}
+        defaultSelectedKeys={["3"]}
+        defaultOpenKeys={["3.1"]}
+        inlineCollapsed={false}
         mode="inline"
         items={items}
       />

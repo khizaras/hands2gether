@@ -12,7 +12,8 @@ import { updateCategories } from "./store/reducers/categories";
 import { getLocation } from "./api/location";
 import { updateAuth, updateGeolocation } from "./store/reducers/auth";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-
+import { getListingsAPI } from "./api/listings";
+import { updateListings } from "./store/reducers/listings";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -25,8 +26,11 @@ const App = () => {
     getLocation().then((location) => dispatch(updateGeolocation(location)));
     onAuthStateChanged(getAuth(), (user) => {
       if (user) {
-        loginSuccess({ user, type: "normal" })
+        loginSuccess({ user, type: "normal" });
       }
+    });
+    getListingsAPI().then((listings) => {
+      dispatch(updateListings(listings));
     });
   }, []);
 

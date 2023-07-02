@@ -4,7 +4,7 @@ import { Menu } from "antd";
 
 const UserNavigations = () => {
   const onClick = (e) => {
-    console.log("click ", e);
+
   };
   return (
     <Menu

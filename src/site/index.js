@@ -14,7 +14,7 @@ const Hands2GetherSite = () => {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#6e4abd",
+          colorPrimary: "#39489f",
           fontFamily: "Roboto, sans-serif",
         },
       }}
@@ -24,7 +24,7 @@ const Hands2GetherSite = () => {
         <Hands2getherPrimaryHeader />
         <Router basepath="/">
           <Hands2getherHomepageContent path="/*" />
-          <UserPage path="/user" />
+          <UserPage path="/user/*" />
         </Router>
       </Layout>
     </ConfigProvider>

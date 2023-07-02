@@ -82,7 +82,7 @@ export const getItemIcon = (icon) => {
     Clothes: <LuShoppingBag size={60} />,
   };
   let result = items[icon];
-  console.log({ result, icon });
+
   return result;
 };
 
