@@ -15,7 +15,7 @@ const Hands2GetherSite = () => {
       theme={{
         token: {
           colorPrimary: "#39489f",
-          fontFamily: "Roboto, sans-serif",
+          fontFamily: "Lato, sans-serif",
         },
       }}
       prefixCls="h2g"

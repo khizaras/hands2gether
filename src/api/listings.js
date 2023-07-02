@@ -52,9 +52,28 @@ export const addListingsAPI = (value) => {
 
 export const getListingsAPI = async () => {
   const querySnapshot = await getDocs(collection(db, "listings"));
+  const categories = await getDocs(collection(db, "categories"));
+
+  const filterCategories = (categoryID) => {
+    let category = categories.docs
+      .filter((category) => category.id === categoryID)[0]
+      .data();
+
+    return category;
+  };
+
   const listings = [];
   querySnapshot.forEach((doc) => {
-    listings.push({ ...doc.data(), id: doc.id });
+    let category = filterCategories(doc.data().category);
+    listings.push({
+      ...doc.data(),
+      id: doc.id,
+      category: {
+        id: doc.data().category,
+        name: category.name,
+        icon: category.icon,
+      },
+    });
   });
   return listings;
 };

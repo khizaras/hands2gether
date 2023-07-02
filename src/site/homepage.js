@@ -8,6 +8,7 @@ import {
   Radio,
   Spin,
   Button,
+  Carousel,
 } from "antd";
 import "antd/dist/reset.css";
 import "./assets/style/index.less";
@@ -16,21 +17,21 @@ import { ImList, ImTable } from "react-icons/im";
 
 import { useSelector } from "react-redux";
 import LocationPickerPopup from "./components/locationPicker";
-import {Layout} from "antd";
+import { Layout } from "antd";
 import banner1 from "./assets/images/h2g-banners.png";
 import { RenderIcon } from "../api/categories";
-
 
 const { Content } = Layout;
 const Hands2getherHomepageContent = () => {
   const user = useSelector((state) => state.user);
   const categories = useSelector((state) => state.categories);
+  const listings = useSelector((state) => state.listings);
 
   useEffect(() => {
-    if (categories.isLoaded) {
+    if (categories.isLoaded && listings.isLoaded) {
       setState({ isCategoriesLoaded: true });
     }
-  }, [categories]);
+  }, [categories, listings]);
   const { geolocation } = user;
 
   const [state, setState] = React.useState({
@@ -38,25 +39,40 @@ const Hands2getherHomepageContent = () => {
   });
   return (
     <section className="homepage-content">
-      <section className="banner-content" >
+      <section className="banner-content">
         <div className="container">
-          <Row justify="center" align="middle" gutter={[16, 16]} className="bg-img" style={{background:`url('${banner1}')`}}>
+          <Row
+            justify="center"
+            align="middle"
+            gutter={[16, 16]}
+            className="bg-img"
+            style={{ background: `url('${banner1}')` }}
+          >
             <Col flex={1}>
               <div className="banner-text">
-                  <Typography.Title level={1} style={{fontFamily:'Inkfree', fontSize:50, }}>Join your hands to help the </Typography.Title>
-                  <Typography.Title level={2} style={{fontFamily:'Inkfree',fontSize:60, }}>Needy ones</Typography.Title>
-                  <Button type="default" size="large">See Listings</Button>
-        
+                <Typography.Title
+                  level={1}
+                  style={{ fontFamily: "Inkfree", fontSize: 50 }}
+                >
+                  Join your hands to help the{" "}
+                </Typography.Title>
+                <Typography.Title
+                  level={2}
+                  style={{ fontFamily: "Inkfree", fontSize: 60 }}
+                >
+                  Needy ones
+                </Typography.Title>
+                <Button type="default" size="large">
+                  See Listings
+                </Button>
               </div>
-
             </Col>
-          
-          </Row>            
+          </Row>
         </div>
       </section>
       {state.isCategoriesLoaded ? (
         <Content className="site-home-content">
-              <section className="categories-section">
+          <section className="categories-section">
             <div className="container">
               <div className="categories-list">
                 {categories.data.map((item, index) => (
@@ -107,7 +123,49 @@ const Hands2getherHomepageContent = () => {
               </Row>
             </div>
           </section>
-      
+          <section className="listings-section">
+            <div className="container">
+              <Typography.Title level={2}>Recent Listings</Typography.Title>
+              <Row justify="start" align="top" gutter={[16, 16]}>
+                <Col xs={24} sm={24} md={12} lg={8} > 
+                  <div className="listings-list">
+                    {listings.data.map((item, index) => (
+                      <div key={index} className="listings-item">
+                        <div className="listings-item-image">
+                          <ListingsImageCarousel {...item} />
+                        </div>
+                        <div className="listings-item-container">
+                          <div className="listings-item-title">
+                            <Typography.Title level={4} ellipsis={{
+                              rows: 2,
+                              expandable: false,
+                              symbol: 'more',
+                            }
+
+                            }> 
+                              {item.title}
+                            </Typography.Title>
+                          </div>
+                          <div className="listings-item-details">
+                           <Row justify="space-between" align="middle" gutter={[16, 16]}>
+                              <Col span={8}>
+                                <Space direction="vertical" size={0} align="center">
+                                <Typography.Text>Category </Typography.Text>
+                                <RenderIcon icon={item.category.icon} />
+                                <Typography.Text> {item.category.name} </Typography.Text>
+                                </Space>
+                              </Col>
+                           </Row>
+                          </div>
+
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Col>
+              </Row>
+            </div>
+          </section>
         </Content>
       ) : (
         <Spin size="large" />
@@ -117,3 +175,15 @@ const Hands2getherHomepageContent = () => {
 };
 
 export default Hands2getherHomepageContent;
+
+export const ListingsImageCarousel = (listing) => {
+  return (
+    <Carousel autoplay>
+      {listing.images.map((item, index) => (
+        <div key={index}>
+          <img src={item} alt="listing" />
+        </div>
+      ))}
+    </Carousel>
+  );
+};

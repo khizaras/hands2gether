@@ -75,16 +75,7 @@ export const createCategoryApi = async (category) => {
   });
 };
 
-export const getItemIcon = (icon) => {
-  const items = {
-    Food: <LuPizza size={60} />,
-    Books: <LuBook size={60} />,
-    Clothes: <LuShoppingBag size={60} />,
-  };
-  let result = items[icon];
 
-  return result;
-};
 
 
 
@@ -1134,6 +1125,5 @@ export const cateGoriesIconsList = [
 ];
 
 export const RenderIcon = ({ icon='LuAirplay' }) => {
-
   return DynamicIcon[icon]() ;
 };
