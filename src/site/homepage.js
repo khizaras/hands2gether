@@ -9,6 +9,7 @@ import {
   Spin,
   Button,
   Carousel,
+  Badge,
 } from "antd";
 import "antd/dist/reset.css";
 import "./assets/style/index.less";
@@ -20,6 +21,7 @@ import LocationPickerPopup from "./components/locationPicker";
 import { Layout } from "antd";
 import banner1 from "./assets/images/h2g-banners.png";
 import { RenderIcon } from "../api/categories";
+import { LuSuperscript } from "react-icons/lu";
 
 const { Content } = Layout;
 const Hands2getherHomepageContent = () => {
@@ -127,47 +129,69 @@ const Hands2getherHomepageContent = () => {
             <div className="container">
               <Typography.Title level={2}>Recent Listings</Typography.Title>
               <Row justify="start" align="top" gutter={[16, 16]}>
-                <Col xs={24} sm={24} md={12} lg={8} > 
-                  <div className="listings-list">
-                    {listings.data.map((item, index) => (
-                      <div key={index} className="listings-item">
-                        <div className="listings-item-image">
-                          <ListingsImageCarousel {...item} />
-                        </div>
-                        <div className="listings-item-container">
-                          <div className="listings-item-title">
-                            <Typography.Title level={4} ellipsis={{
-                              rows: 2,
-                              expandable: false,
-                              symbol: 'more',
-                            }
-
-                            }> 
-                              {item.title}
-                            </Typography.Title>
+                {listings.data.map((item, index) => (
+                  <Col key={index} xs={24} sm={12} md={8} lg={6} xl={6}>
+                    <div className="listings-list">
+                      <Badge.Ribbon text={item.type}>
+                        <div className="listings-item">
+                          <div className="listings-item-image">
+                            <ListingsImageCarousel {...item} />
                           </div>
-                          <div className="listings-item-details">
-                           <Row justify="space-between" align="middle" gutter={[16, 16]}>
-                              <Col span={8}>
-                                <Space direction="vertical" size={0} align="center">
-                                <Typography.Text>Category </Typography.Text>
-                                <RenderIcon icon={item.category.icon} />
-                                <Typography.Text> {item.category.name} </Typography.Text>
-                                </Space>
-                              </Col>
-                              <Col span={8}>
-                                <Space direction="vertical" size={0} align="center">
-                                  
-                                </Space>
-                              </Col>
-                           </Row>
+                          <div className="listings-item-container">
+                            <div className="listings-item-title">
+                              <Typography.Title
+                                level={4}
+                                ellipsis={{
+                                  rows: 2,
+                                  expandable: false,
+                                  symbol: "more",
+                                }}
+                              >
+                                {item.title}
+                              </Typography.Title>
+                            </div>
+                            <div className="listings-item-details">
+                              <Row
+                                justify="center"
+                                align="middle"
+                                gutter={[16, 16]}
+                              >
+                                <Col key={index} span={8}>
+                                  <Space
+                                    size={0}
+                                    align="center"
+                                    direction="vertical"
+                                  >
+                                    <Typography.Text>Category </Typography.Text>
+                                    <Typography.Text strong>
+                                      {item.category.name}
+                                    </Typography.Text>
+                                  </Space>
+                                </Col>
+                                {item.category.filters.map((filter, index) => (
+                                  <Col key={index} span={8}>
+                                    <Space
+                                      direction="vertical"
+                                      size={0}
+                                      align="center"
+                                    >
+                                      <Typography.Text>
+                                        {filter}
+                                      </Typography.Text>
+                                      <Typography.Text strong>
+                                        {item[filter]}
+                                      </Typography.Text>
+                                    </Space>
+                                  </Col>
+                                ))}
+                              </Row>
+                            </div>
                           </div>
-
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </Col>
+                      </Badge.Ribbon>
+                    </div>
+                  </Col>
+                ))}
               </Row>
             </div>
           </section>

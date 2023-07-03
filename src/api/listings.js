@@ -1,5 +1,6 @@
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { collection, getDocs, setDoc, doc, addDoc } from "firebase/firestore";
+import _ from "lodash";
 import moment from "moment";
 
 const db = getFirestore();
@@ -14,8 +15,12 @@ export const addListingsAPI = (value) => {
       });
       return images;
     };
+
+    const collectionRef = collection(db, "listings");
+    const docRef = doc(collectionRef);
+    const id = docRef.id;
     let data = {
-      id: null,
+      id,
       ...value,
       date: moment().valueOf(),
       settings: {
@@ -35,13 +40,11 @@ export const addListingsAPI = (value) => {
       },
     };
     delete data.foodImage;
-
-    const listingsRef = collection(db, "listings");
-    addDoc(listingsRef, data)
-      .then((docRef) => {
-        console.log({ value, data, docRef });
-        console.log("Document written with ID: ", docRef.id);
-        resolve(docRef.id);
+    setDoc(docRef, { ...data })
+      .then(() => {
+        console.log({ data });
+        console.log("Document written with ID: ", id);
+        resolve(id);
       })
       .catch((error) => {
         console.error("Error adding document: ", error);
@@ -58,8 +61,19 @@ export const getListingsAPI = async () => {
     let category = categories.docs
       .filter((category) => category.id === categoryID)[0]
       .data();
-
-    return category;
+    console.log({ category });
+    return {
+      id: category._id,
+      name: category.name,
+      icon: category.icon,
+      filters: _(category.fields)
+        .map((field) => {
+          return field.filter === true ? field.name : null;
+        })
+        .filter()
+        .value(),
+      //category.fields.filter((cat) => cat.filter === true)[0].name,
+    };
   };
 
   const listings = [];
@@ -68,11 +82,7 @@ export const getListingsAPI = async () => {
     listings.push({
       ...doc.data(),
       id: doc.id,
-      category: {
-        id: doc.data().category,
-        name: category.name,
-        icon: category.icon,
-      },
+      category: category,
     });
   });
   return listings;

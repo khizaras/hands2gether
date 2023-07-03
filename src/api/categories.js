@@ -3,7 +3,6 @@ import { collection, getDocs, setDoc, doc, addDoc } from "firebase/firestore";
 import { LuPizza, LuBook, LuShoppingBag } from "react-icons/lu";
 import * as DynamicIcon from "react-icons/lu";
 
-
 import React from "react";
 const db = getFirestore();
 connectFirestoreEmulator(db, "localhost", 8080);
@@ -28,6 +27,7 @@ export const getCategories = async () => {
 };
 
 export const updateCategoryApi = async (category) => {
+  console.log({ category });
   return new Promise((resolve, reject) => {
     const categoryRef = doc(db, "categories", category._id);
     setDoc(categoryRef, category)
@@ -42,11 +42,12 @@ export const updateCategoryApi = async (category) => {
 
 export const createCategoryApi = async (category) => {
   return new Promise((resolve, reject) => {
-    const id = doc(collection(db, "categories")).id;
-    const categoryRef = collection(db, "categories");
+    const collectionRef = collection(db, "categories");
+    const docRef = doc(collectionRef);
+    const documentUuid = docRef.id;
     const data = {
-      id,
-      _id: id,
+      id: documentUuid,
+      _id: documentUuid,
       ...category,
       fields: [
         {
@@ -65,7 +66,7 @@ export const createCategoryApi = async (category) => {
         },
       ],
     };
-    addDoc(categoryRef, data)
+    setDoc(docRef, { uuid: documentUuid, ...data })
       .then((res) => {
         resolve(res);
       })
@@ -74,10 +75,6 @@ export const createCategoryApi = async (category) => {
       });
   });
 };
-
-
-
-
 
 export const cateGoriesIconsList = [
   "LuAccessibility",
@@ -1124,6 +1121,6 @@ export const cateGoriesIconsList = [
   "LuZoomOut",
 ];
 
-export const RenderIcon = ({ icon='LuAirplay' }) => {
-  return DynamicIcon[icon]() ;
+export const RenderIcon = ({ icon = "LuAirplay" }) => {
+  return DynamicIcon[icon]();
 };
