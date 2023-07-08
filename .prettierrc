@@ -17,7 +17,7 @@
     "singleQuote": false,
     "tabWidth": 2,
     "trailingComma": "es5",
-    "useTabs": false,
+    "useTabs": true,
     "embeddedLanguageFormatting": "auto",
     "vueIndentScriptAndStyle": false,
     "filepath": "c:\\develop\\hands2gether\\src\\",
