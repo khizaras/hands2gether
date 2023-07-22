@@ -1,13 +1,12 @@
 import React from "react";
 import { Layout, ConfigProvider } from "antd";
-import "antd/dist/reset.css";
-import "./assets/style/index.less";
-
 import { Router } from "@gatsbyjs/reach-router";
 import UserPage from "./user";
 import Hands2getherPrimaryHeader from "./components/header";
 import Hands2getherHomepageContent from "./homepage";
-
+import ViewListings from "./viewListings";
+import "antd/dist/reset.css";
+import "./assets/style/index.less";
 
 const Hands2GetherSite = () => {
   return (
@@ -24,6 +23,7 @@ const Hands2GetherSite = () => {
         <Hands2getherPrimaryHeader />
         <Router basepath="/">
           <Hands2getherHomepageContent path="/*" />
+          <ViewListings path="/listings/:id" />
           <UserPage path="/user/*" />
         </Router>
       </Layout>

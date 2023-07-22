@@ -20,17 +20,17 @@ const App = () => {
 	//const user = useSelector((state) => state.user);
 
 	useEffect(() => {
-		getCategories().then((categories) =>
-			dispatch(updateCategories(categories))
-		);
+		getCategories().then((categories) => {
+			dispatch(updateCategories(categories));
+			getListingsAPI().then((listings) => {
+				dispatch(updateListings(listings));
+			});
+		});
 		getLocation().then((location) => dispatch(updateGeolocation(location)));
 		onAuthStateChanged(getAuth(), (user) => {
 			if (user) {
 				loginSuccess({ user, type: "normal" });
 			}
-		});
-		getListingsAPI().then((listings) => {
-			dispatch(updateListings(listings));
 		});
 	}, []);
 

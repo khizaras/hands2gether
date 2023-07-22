@@ -22,6 +22,7 @@ import { Layout } from "antd";
 import banner1 from "./assets/images/h2g-banners.png";
 import { RenderIcon } from "../api/categories";
 import { LuSuperscript } from "react-icons/lu";
+import { Link } from "@gatsbyjs/reach-router";
 
 const { Content } = Layout;
 const Hands2getherHomepageContent = () => {
@@ -129,68 +130,8 @@ const Hands2getherHomepageContent = () => {
             <div className="container">
               <Typography.Title level={2}>Recent Listings</Typography.Title>
               <Row justify="start" align="top" gutter={[16, 16]}>
-                {listings.data.map((item, index) => (
-                  <Col key={index} xs={24} sm={12} md={8} lg={6} xl={6}>
-                    <div className="listings-list">
-                      <Badge.Ribbon text={item.type}>
-                        <div className="listings-item">
-                          <div className="listings-item-image">
-                            <ListingsImageCarousel {...item} />
-                          </div>
-                          <div className="listings-item-container">
-                            <div className="listings-item-title">
-                              <Typography.Title
-                                level={4}
-                                ellipsis={{
-                                  rows: 2,
-                                  expandable: false,
-                                  symbol: "more",
-                                }}
-                              >
-                                {item.title}
-                              </Typography.Title>
-                            </div>
-                            <div className="listings-item-details">
-                              <Row
-                                justify="center"
-                                align="middle"
-                                gutter={[16, 16]}
-                              >
-                                <Col key={index} span={8}>
-                                  <Space
-                                    size={0}
-                                    align="center"
-                                    direction="vertical"
-                                  >
-                                    <Typography.Text>Category </Typography.Text>
-                                    <Typography.Text strong>
-                                      {item.category.name}
-                                    </Typography.Text>
-                                  </Space>
-                                </Col>
-                                {item.category.filters.map((filter, index) => (
-                                  <Col key={index} span={8}>
-                                    <Space
-                                      direction="vertical"
-                                      size={0}
-                                      align="center"
-                                    >
-                                      <Typography.Text>
-                                        {filter}
-                                      </Typography.Text>
-                                      <Typography.Text strong>
-                                        {item[filter]}
-                                      </Typography.Text>
-                                    </Space>
-                                  </Col>
-                                ))}
-                              </Row>
-                            </div>
-                          </div>
-                        </div>
-                      </Badge.Ribbon>
-                    </div>
-                  </Col>
+                {listings.data.map((listing, index) => (
+                  <ListingsCard key={index} listing={listing} />
                 ))}
               </Row>
             </div>
@@ -205,7 +146,8 @@ const Hands2getherHomepageContent = () => {
 
 export default Hands2getherHomepageContent;
 
-export const ListingsImageCarousel = (listing) => {
+
+export const ListingsImageCarousel = ({listing}) => {
   return (
     <Carousel autoplay>
       {listing.images.map((item, index) => (
@@ -216,3 +158,71 @@ export const ListingsImageCarousel = (listing) => {
     </Carousel>
   );
 };
+
+export const ListingsCard = ({ listing }) => {
+  return (
+    <Col xs={24} sm={12} md={8} lg={6} xl={6}>
+      <div className="listings-list">
+        <Link to={`/listings/${listing.id}`} state={listing}  >
+          <Badge.Ribbon text={listing.type}>
+            <div className="listings-item">
+              <div className="listings-item-image">
+                <ListingsImageCarousel listing={listing} />
+              </div>
+              <div className="listings-item-container">
+                <div className="listings-item-title">
+                  <Typography.Title
+                    level={4}
+                    ellipsis={{
+                      rows: 2,
+                      expandable: false,
+                      symbol: "more",
+                    }}
+                  >
+                    {listing.title}
+                  </Typography.Title>
+                </div>
+                <div className="listings-item-details">
+                  <Row
+                    justify="center"
+                    align="middle"
+                    gutter={[16, 16]}
+                  >
+                    <Col span={8}>
+                      <Space
+                        size={0}
+                        align="center"
+                        direction="vertical"
+                      >
+                        <Typography.Text>Category </Typography.Text>
+                        <Typography.Text strong>
+                          {listing.category.name}
+                        </Typography.Text>
+                      </Space>
+                    </Col>
+                    {listing.category.filters.map((filter, index) => (
+                      <Col key={index} span={8}>
+                        <Space
+                          direction="vertical"
+                          size={0}
+                          align="center"
+                        >
+                          <Typography.Text>
+                            {filter}
+                          </Typography.Text>
+                          <Typography.Text strong>
+                            {listing[filter]}
+                          </Typography.Text>
+                        </Space>
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              </div>
+            </div>
+          </Badge.Ribbon>
+        </Link>
+      </div>
+    </Col>
+  )
+}

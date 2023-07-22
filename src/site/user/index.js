@@ -19,6 +19,7 @@ import { UserOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { LuCheckCircle, LuLayoutList,LuListChecks,LuBellRing} from "react-icons/lu";
 import UserAddListings from "./addListings";
+import UsersListings from "./mylistings";
 const { Content } = Layout;
 
 const UserPage = () => {
@@ -74,6 +75,8 @@ const UserPage = () => {
               <Router>
                 <OverviewSection  user={user} path="/" />
                 <UserAddListings path="/addListings" />
+                <UserAddListings path="/editListings/:id" />
+                <UsersListings path="/myListings" />
               </Router>
             </Col>
           </Row>

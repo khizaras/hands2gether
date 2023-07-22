@@ -1,0 +1,22 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "sonarlint.analyzerProperties": {
+    "sonar.javascript.node.maxspace": "4096",
+  },
+  "eslint.enable": true,
+  "editor.formatOnPaste": false, // required 
+  "editor.formatOnType": false, // required
+  "editor.formatOnSave": true, // optional 
+  "editor.formatOnSaveMode": "file", // required to format on save
+  "files.autoSave": "onFocusChange", // optional but recommended
+   "files.exclude": {
+    "client/amplify/": true,
+  },
+  "less.format.enable": true,
+
+
+}
+

@@ -1,16 +1,16 @@
+import firebaseApp from "./firebase";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import firebaseApp from "./firebase";
 import App from "./app";
 import { Provider } from "react-redux";
 import { store } from "./store";
-import firebaseapp from "./firebase";
+
 
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement);
-firebaseapp.name;
+
 root.render(
-	<Provider store={store}>
+	<Provider store={store} >
 		<App />
 	</Provider>
 );
