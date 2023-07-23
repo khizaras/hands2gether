@@ -5,9 +5,7 @@ import {
 	connectStorageEmulator,
 	getDownloadURL,
 } from "firebase/storage";
-
-const storage = getStorage();
-connectStorageEmulator(storage, "localhost", 9199);
+import { storage } from "../firebase";
 
 export const uploadListingImage = async ({
 	onError,

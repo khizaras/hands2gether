@@ -81,11 +81,6 @@ const UsersListings = () => {
 								pageSize: 3,
 							}}
 							dataSource={data}
-							footer={
-								<div>
-									<b>ant design</b> footer part
-								</div>
-							}
 							renderItem={(listing) => <ListingsListView listing={listing} />}
 						/>
 					) : (

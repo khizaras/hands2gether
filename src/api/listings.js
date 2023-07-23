@@ -1,10 +1,7 @@
-import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { collection, getDocs, setDoc, doc, addDoc } from "firebase/firestore";
 import _ from "lodash";
 import moment from "moment";
-
-const db = getFirestore();
-connectFirestoreEmulator(db, "localhost", 8080);
+import { db } from "../firebase";
 
 export const addListingsAPI = (value) => {
 	return new Promise((resolve, reject) => {
@@ -23,23 +20,31 @@ export const addListingsAPI = (value) => {
 			id,
 			...value,
 			date: moment().valueOf(),
-			settings: {
-				isFeatured: false,
-				isApproved: false,
-				showContactDetails: false,
-				showLocation: false,
-			},
 			expiryDate: moment().add(30, "days").valueOf(),
 			images:
-				(value.foodImage && extractImageList(value.foodImage.fileList)) || [],
+				(value.listingImages &&
+					extractImageList(value.listingImages.fileList)) ||
+				[],
 			user: {
 				id: value.user.uid,
 				displayName: value.user.displayName,
 				email: value.user.email,
 				photoURL: value.user.photoURL,
 			},
+			settings: {
+				isFeatured: false,
+				isApproved: false,
+				showContact: value?.showContact || false,
+				showLocation: value?.showLocation || false,
+				allowComments: value?.allowComments || false,
+			},
 		};
-		delete data.foodImage;
+		delete data.listingImages;
+		delete data.allowComments;
+		delete data.showContact;
+		delete data.showLocation;
+
+		console.log({ data });
 		setDoc(docRef, { ...data })
 			.then(() => {
 				console.log({ data });
@@ -55,13 +60,13 @@ export const addListingsAPI = (value) => {
 
 export const getListingsAPI = async () => {
 	const querySnapshot = await getDocs(collection(db, "listings"));
-	const categories = await getDocs(collection(db, "categories"));	
+	const categories = await getDocs(collection(db, "categories"));
 	const filterCategories = (categoryID) => {
-    if(!categoryID) return null;
+		if (!categoryID) return null;
 		let category = categories.docs
 			.filter((category) => category.id === categoryID)[0]
 			.data();
-		
+
 		return {
 			id: category._id,
 			name: category.name,
@@ -87,4 +92,3 @@ export const getListingsAPI = async () => {
 	});
 	return listings;
 };
-

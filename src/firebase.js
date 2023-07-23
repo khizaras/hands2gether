@@ -1,4 +1,7 @@
 import { initializeApp } from "firebase/app";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
+import { connectStorageEmulator, getStorage } from "firebase/storage";
 //import { getAnalytics } from "firebase/analytics";
 const firebaseConfig = {
 	apiKey: "AIzaSyBE8Q0A9fqdta_xeZC1Y00J5qI9A21Cj04",
@@ -11,5 +14,12 @@ const firebaseConfig = {
 	measurementId: "G-LYQ8KZ8SHE",
 };
 const firebaseApp = initializeApp(firebaseConfig);
-//const analytics = getAnalytics(firebaseApp);
 export default firebaseApp;
+
+const storage = getStorage();
+const db = getFirestore();
+const auth = getAuth();
+connectFirestoreEmulator(db, "localhost", 8080);
+connectStorageEmulator(storage, "localhost", 9199);
+connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
+export { firebaseApp, storage, db, auth };
