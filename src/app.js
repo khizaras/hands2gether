@@ -12,10 +12,20 @@ import { updateCategories } from "./store/reducers/categories";
 import { getLocation } from "./api/location";
 import { updateAuth, updateGeolocation } from "./store/reducers/auth";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getListingsAPI } from "./api/listings";
-import { updateListings } from "./store/reducers/listings";
+import {
+	getListingsAPI,
+	getListingsSummaryByLocation,
+	getListingsWithFillterAPI,
+} from "./api/listings";
+import {
+	updateListings,
+	updatefilteredListingsReducer,
+} from "./store/reducers/listings";
+import { useSelector } from "react-redux";
 
 const App = () => {
+	const config = useSelector((state) => state.config);
+	const listings = useSelector((state) => state.listings);
 	const dispatch = useDispatch();
 	//const user = useSelector((state) => state.user);
 
@@ -24,6 +34,9 @@ const App = () => {
 			dispatch(updateCategories(categories));
 			getListingsAPI().then((listings) => {
 				dispatch(updateListings(listings));
+				getListingsSummaryByLocation(listings).then((summary) => {
+					console.log(summary);
+				});
 			});
 		});
 		getLocation().then((location) => dispatch(updateGeolocation(location)));
@@ -33,6 +46,24 @@ const App = () => {
 			}
 		});
 	}, []);
+	useEffect(() => {
+		if (
+			listings.isLoaded &&
+			config.filter.location.city &&
+			listings.data.length > 0
+		) {
+			getListingsWithFillterAPI({
+				filter: {
+					city: config.filter.location.city,
+					state: config.filter.location.state,
+					country: config.filter.location.country,
+				},
+				listings: listings.data,
+			}).then((listings) => {
+				dispatch(updatefilteredListingsReducer(listings));
+			});
+		}
+	}, [config.filter.location]);
 
 	const loginSuccess = ({ user, type }) => {
 		dispatch(updateAuth({ isAuth: true, ...user, type }));

@@ -19,7 +19,7 @@ export default firebaseApp;
 const storage = getStorage();
 const db = getFirestore();
 const auth = getAuth();
-connectFirestoreEmulator(db, "localhost", 8080);
+/* connectFirestoreEmulator(db, "localhost", 8080);
 connectStorageEmulator(storage, "localhost", 9199);
-connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
+connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true }); */
 export { firebaseApp, storage, db, auth };

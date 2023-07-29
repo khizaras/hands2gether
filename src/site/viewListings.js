@@ -93,7 +93,7 @@ const ViewListings = (props) => {
 										</Col>
 										<Col span={24}>
 											<Row justify="start" align="top" gutter={[16, 16]}>
-												<Col span={8}>
+												<Col span={8} lg={8} md={8} sm={12} xs={12}>
 													<Space align="center" size={10}>
 														<LuAccessibility size={40} />
 														<Space direction="vertical">
@@ -106,18 +106,16 @@ const ViewListings = (props) => {
 														</Space>
 													</Space>
 												</Col>
-												<Col span={8}>
+												<Col span={8} lg={8} md={8} sm={12} xs={12}>
 													<Space align="center" size={10}>
 														<LuSunMedium size={40} />
 														<Space direction="vertical">
-															<Typography.Text strong>
-																Quuantity
-															</Typography.Text>
+															<Typography.Text strong>Quantity</Typography.Text>
 															<Typography.Text>{data.quantity}</Typography.Text>
 														</Space>
 													</Space>
 												</Col>
-												<Col span={8}>
+												<Col span={8} lg={8} md={8} sm={12} xs={12}>
 													<Space align="center" size={10}>
 														<LuMapPin size={40} />
 														<Space direction="vertical">
@@ -143,7 +141,14 @@ const ViewListings = (props) => {
 															return item.name !== "images" &&
 																item.name !== "title" &&
 																item.name !== "description" ? (
-																<Col span={8} key={index}>
+																<Col
+																	span={8}
+																	lg={8}
+																	md={8}
+																	sm={12}
+																	xs={12}
+																	key={index}
+																>
 																	<Row>
 																		<Col span={24}>
 																			<Typography.Text

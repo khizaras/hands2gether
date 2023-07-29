@@ -92,3 +92,38 @@ export const getListingsAPI = async () => {
 	});
 	return listings;
 };
+
+export const getListingsWithFillterAPI = async ({ filter, listings }) => {
+	let result = [];
+	console.log({ filter, listings });
+	if (filter.city && filter.state && filter.country) {
+		result = listings.filter((listing) => {
+			return (
+				listing.location.city === filter.city &&
+				listing.location.state === filter.state &&
+				listing.location.country === filter.country
+			);
+		});
+	}
+	return result;
+};
+
+// Function to show summary in location-wise format
+export const getListingsSummaryByLocation = async (data) => {
+	const summary = {};
+
+	// Iterate through each listing in the data
+	data.forEach((listing) => {
+		const { city, state, country } = listing.location;
+		const locationKey = `${city}, ${state}, ${country}`;
+
+		// Count by location
+		if (summary[locationKey]) {
+			summary[locationKey]++;
+		} else {
+			summary[locationKey] = 1;
+		}
+	});
+
+	return summary;
+};
