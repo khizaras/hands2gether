@@ -144,7 +144,7 @@ const Singinform = ({
 		});
 	};
 	const onFinishFailed = (errorInfo) => {
-		console.log("Failed:", errorInfo);
+		console.error("Failed:", errorInfo);
 	};
 	return (
 		<div className="signin">
@@ -222,7 +222,6 @@ const Singinform = ({
 				type="link"
 				onClick={() => {
 					setState({ ...state, currenttab: "signup" });
-					console.log({ state });
 				}}
 			>
 				Don't have an account, Signup

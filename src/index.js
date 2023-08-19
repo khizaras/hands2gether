@@ -4,6 +4,8 @@ import App from "./app";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import firebaseApp from "./firebase";
+import logger from "./widgets/logger";
+window.logger = logger;
 
 const root = document.getElementById("root");
 createRoot(root).render(

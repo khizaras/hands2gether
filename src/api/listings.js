@@ -1,4 +1,11 @@
-import { collection, getDocs, setDoc, doc, addDoc } from "firebase/firestore";
+import {
+	collection,
+	getDocs,
+	setDoc,
+	doc,
+	query,
+	where,
+} from "firebase/firestore";
 import _ from "lodash";
 import moment from "moment";
 import { db } from "../firebase";
@@ -16,6 +23,8 @@ export const addListingsAPI = (value) => {
 		const collectionRef = collection(db, "listings");
 		const docRef = doc(collectionRef);
 		const id = docRef.id;
+		let country = JSON.parse(value?.location?.country);
+		delete country.timezones;
 		let data = {
 			id,
 			...value,
@@ -31,6 +40,11 @@ export const addListingsAPI = (value) => {
 				email: value.user.email,
 				photoURL: value.user.photoURL,
 			},
+			location: {
+				city: JSON.parse(value.location.city),
+				state: JSON.parse(value.location.state),
+				country: country,
+			},
 			settings: {
 				isFeatured: false,
 				isApproved: false,
@@ -43,6 +57,7 @@ export const addListingsAPI = (value) => {
 		delete data.allowComments;
 		delete data.showContact;
 		delete data.showLocation;
+		delete data.location.country.timezones;
 
 		console.log({ data });
 		setDoc(docRef, { ...data })
@@ -95,16 +110,23 @@ export const getListingsAPI = async () => {
 
 export const getListingsWithFillterAPI = async ({ filter, listings }) => {
 	let result = [];
-	console.log({ filter, listings });
 	if (filter.city && filter.state && filter.country) {
+		console.log({ filter, listings });
 		result = listings.filter((listing) => {
 			return (
-				listing.location.city === filter.city &&
-				listing.location.state === filter.state &&
-				listing.location.country === filter.country
+				listing.location.city.name === filter.city &&
+				listing.location.state.isoCode === filter.state &&
+				listing.location.country.isoCode === filter.country
 			);
 		});
 	}
+	if (filter.category) {
+		console.log({ filter, listings });
+		result = listings.filter(
+			(listing) => listing.category.id === filter.category
+		);
+	}
+
 	return result;
 };
 
@@ -126,4 +148,42 @@ export const getListingsSummaryByLocation = async (data) => {
 	});
 
 	return summary;
+};
+
+export const getCommentsOfListingAPI = async (listingID) => {
+	try {
+		const commentsRef = collection(db, "comments");
+		const q = query(commentsRef, where("listings", "==", listingID));
+		const querySnapshot = await getDocs(q);
+		const comments = [];
+		querySnapshot.forEach((doc) => {
+			comments.push(doc.data());
+		});
+		return comments;
+	} catch (error) {
+		console.error(
+			`[ERROR][${moment().format("HH:mm:ss")}][getCommentsOfListingAPI]`,
+			error
+		);
+	}
+};
+
+export const addCommentAPI = async (comment) => {
+	try {
+		const commentsRef = collection(db, "comments");
+		const docRef = doc(commentsRef);
+		const id = docRef.id;
+		const data = {
+			...comment,
+			id,
+			date: moment().valueOf(),
+		};
+		await setDoc(docRef, { ...data });
+		return data;
+	} catch (error) {
+		console.error(
+			`[ERROR][${moment().format("HH:mm:ss")}][addCommentAPI]`,
+			error
+		);
+	}
 };

@@ -3,14 +3,22 @@ const initialState = {
 	isLoaded: false,
 	data: [],
 	filtered: [],
+	comments: [],
 };
 
 const listingsSlice = createSlice({
 	name: "listings",
 	initialState,
 	reducers: {
+		updateComments: (state, action) => {
+			return {
+				...state,
+				comments: action.payload,
+			};
+		},
 		updateListings: (state, action) => {
 			return {
+				...state,
 				isLoaded: true,
 				data: action.payload,
 				filtered: action.payload,
@@ -25,6 +33,6 @@ const listingsSlice = createSlice({
 	},
 });
 
-export const { updateListings, updatefilteredListingsReducer } =
+export const { updateListings, updatefilteredListingsReducer, updateComments } =
 	listingsSlice.actions;
 export default listingsSlice.reducer;

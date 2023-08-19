@@ -34,9 +34,6 @@ const App = () => {
 			dispatch(updateCategories(categories));
 			getListingsAPI().then((listings) => {
 				dispatch(updateListings(listings));
-				getListingsSummaryByLocation(listings).then((summary) => {
-					console.log(summary);
-				});
 			});
 		});
 		getLocation().then((location) => dispatch(updateGeolocation(location)));

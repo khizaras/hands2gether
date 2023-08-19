@@ -5,7 +5,6 @@ import {
 	Empty,
 	Form,
 	Row,
-	Select,
 	Spin,
 	Typography,
 	Image,
@@ -14,31 +13,85 @@ import {
 	Space,
 	Avatar,
 	Input,
+	Steps,
+	Modal,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import {
 	LuAccessibility,
-	LuFilter,
 	LuMapPin,
 	LuSunMedium,
 	LuUserCog,
+	LuThumbsUp,
+	LuThumbsDown,
+	LuAsterisk,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
+import { addCommentAPI, getCommentsOfListingAPI } from "../api/listings";
+import { useDispatch } from "react-redux";
+import { updateComments } from "../store/reducers/listings";
+import moment from "moment";
 
 const ViewListings = (props) => {
 	const { id } = props;
 	const { state } = props.location;
 	const listings = useSelector((state) => state.listings);
+	const user = useSelector((state) => state.user);
 	const categories = useSelector((state) => state.categories);
 	const [contentLoaded, setContentLoaded] = useState(false);
 	const [data, setData] = useState(state);
+	const [currentComments, setCurrentComments] = useState([]); // [
 	const [fields, setFields] = useState([]);
+	const dispatch = useDispatch();
 
 	const getCategoryFields = (id) => {
 		const category = categories.data.find((category) => category._id === id.id);
 		let fields = category?.fields;
-		console.log({ id, fields });
 		setFields(fields);
+	};
+	const [commentform] = Form.useForm();
+
+	const addComment = (values) => {
+		Modal.confirm({
+			title: "Confirm",
+			content: "Are you sure you want to post this comment?",
+			okText: "Yes",
+			cancelText: "No",
+			onOk: () => {
+				let commentData = {
+					comment: values.comment,
+					listings: id,
+					user: {
+						id: user.uid,
+						displayName: user.displayName,
+						photoURL: user.photoURL,
+					},
+					date: moment().format("YYYY-MM-DD HH:mm:ss"),
+				};
+				console.log({ commentData, values });
+				addCommentAPI(commentData).then((result) => {
+					setCurrentComments([...currentComments, result]);
+					dispatch(updateComments([...currentComments, result]));
+					console.log({ result });
+					commentform.resetFields();
+				});
+			},
+		});
+	};
+
+	const getComments = (id) => {
+		const { comments } = listings;
+		let findCurrentComments = comments.filter((comment) => {
+			return comment.listings === id;
+		});
+		if (findCurrentComments.length > 0) {
+			setCurrentComments(findCurrentComments);
+		} else {
+			getCommentsOfListingAPI(id).then((currentListingComments) => {
+				setCurrentComments([...currentListingComments, ...currentComments]);
+				dispatch(updateComments([...comments, ...currentListingComments]));
+			});
+		}
 	};
 
 	useEffect(() => {
@@ -47,7 +100,9 @@ const ViewListings = (props) => {
 				if (state?.id) {
 					getCategoryFields(state.category);
 					setContentLoaded(true);
+					getComments(id);
 				} else {
+					getComments(id);
 					let findListings = listings.data.find((item) => item.id === id);
 					getCategoryFields(findListings.category);
 					setData(findListings);
@@ -73,22 +128,27 @@ const ViewListings = (props) => {
 										</Col>
 										<Divider />
 										<Col span={24} className="listing-images">
-											<Row justify="start" align="top" gutter={[16, 16]}>
-												{data.images.length > 0 ? (
-													data.images.map((item, index) => {
-														return (
-															<Col xs={12} sm={12} md={8} lg={8} key={index}>
-																<Image preview src={item} />
-															</Col>
-														);
-													})
-												) : (
-													<Empty description="No images available" />
-												)}
-											</Row>
+											<Image.PreviewGroup>
+												<Row justify="start" align="top" gutter={[16, 16]}>
+													{data.images.length > 0 ? (
+														data.images.map((item, index) => {
+															return (
+																<Col xs={12} sm={12} md={8} lg={8} key={index}>
+																	<Image preview src={item} />
+																</Col>
+															);
+														})
+													) : (
+														<Empty description="No images available" />
+													)}
+												</Row>
+											</Image.PreviewGroup>
 										</Col>
 										<Col span={24}>
-											<Typography.Text>{data.description}</Typography.Text>
+											<div
+												dangerouslySetInnerHTML={{ __html: data.description }}
+											/>
+
 											<Divider />
 										</Col>
 										<Col span={24}>
@@ -121,10 +181,10 @@ const ViewListings = (props) => {
 														<Space direction="vertical">
 															<Typography.Text strong>Location</Typography.Text>
 															<Typography.Text>
-																{data?.location?.city} {" - "}
-																{data?.location?.state}
+																{data?.location?.city?.name} {" - "}
+																{data?.location?.state?.name}
 																{", "}
-																{data?.location?.country}
+																{data?.location?.country?.name}
 															</Typography.Text>
 														</Space>
 													</Space>
@@ -175,23 +235,128 @@ const ViewListings = (props) => {
 											</Col>
 										</Row>
 										<Divider />
+
 										<Col span={24}>
-											<section className="comments" style={{ marginTop: 30 }}>
-												<Row justify="start" align="middle" gutter={[16, 16]}>
-													<Col span={20}>
-														<Form layout="vertical">
-															<Form.Item label="Comment">
+											<Typography.Title level={5}>Comments</Typography.Title>
+											<Divider />
+											<Steps
+												status="process"
+												direction="vertical"
+												size="default"
+												items={currentComments.map((item) => {
+													return {
+														title: (
+															<Space
+																align="start"
+																size={1}
+																style={{ marginLeft: 30 }}
+															>
+																<Typography.Text strong style={{ margin: 0 }}>
+																	{item.user.displayName}
+																</Typography.Text>
+																<span>&nbsp;</span>
+																<Typography.Text disabled style={{ margin: 0 }}>
+																	{moment(item?.date).format(
+																		"MMMM Do YYYY h:mm:ss a"
+																	)}
+																</Typography.Text>
+															</Space>
+														),
+														description: (
+															<section
+																style={{ marginLeft: 30, marginTop: 15 }}
+															>
+																<Typography.Text>
+																	<div
+																		dangerouslySetInnerHTML={{
+																			__html: item.comment,
+																		}}
+																	/>
+																</Typography.Text>
+																<Row justify="end" align="middle">
+																	<Col flex={0}>
+																		<Space>
+																			<Button
+																				type="link"
+																				size="small"
+																				icon={<LuThumbsUp />}
+																			>
+																				0
+																			</Button>
+																			<Button
+																				type="link"
+																				size="small"
+																				icon={<LuThumbsDown />}
+																			>
+																				0
+																			</Button>
+																		</Space>
+																	</Col>
+																	<Col flex={0}>
+																		<Button
+																			type="link"
+																			danger
+																			size="small"
+																			icon={<LuAsterisk />}
+																		>
+																			Report
+																		</Button>
+																	</Col>
+																</Row>
+															</section>
+														),
+														icon: (
+															<Avatar
+																size={50}
+																src={item.user.photoURL}
+																icon={<LuUserCog />}
+																style={{ marginRight: 400 }}
+															/>
+														),
+													};
+												})}
+											/>
+										</Col>
+										<Col span={24}>
+											<Form
+												layout="vertical"
+												onFinish={addComment}
+												form={commentform}
+											>
+												<section className="comments" style={{ marginTop: 30 }}>
+													<Row justify="start" align="middle" gutter={[16, 16]}>
+														<Col span={20}>
+															<Form.Item
+																label="comment"
+																name="comment"
+																rules={[
+																	{
+																		required: true,
+																		message: "Please input your comment!",
+																	},
+																	{
+																		min: 20,
+																		message:
+																			"Comment must be atleast 20 characters long",
+																	},
+																	{
+																		max: 500,
+																		message:
+																			"Comment must be less than 500 characters long",
+																	},
+																]}
+															>
 																<Input.TextArea rows={5} />
 															</Form.Item>
-														</Form>
-													</Col>
-													<Col span={2}>
-														<Button type="primary" block>
-															Post
-														</Button>
-													</Col>
-												</Row>
-											</section>
+														</Col>
+														<Col span={2}>
+															<Button type="primary" htmlType="submit">
+																Post
+															</Button>
+														</Col>
+													</Row>
+												</section>
+											</Form>
 										</Col>
 									</Row>
 								</Card>

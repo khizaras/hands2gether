@@ -13,10 +13,12 @@
   "editor.formatOnSaveMode": "file", // required to format on save
   "files.autoSave": "onFocusChange", // optional but recommended
    "files.exclude": {
-    "client/amplify/": true,
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "node_modules": true,
+    "build":true
   },
   "less.format.enable": true,
-
 
 }
 

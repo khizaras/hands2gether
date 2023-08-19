@@ -27,6 +27,19 @@ import { addListingsAPI } from "../../api/listings";
 import { useState } from "react";
 import { Country, State, City } from "country-state-city";
 import moment from "moment";
+import {
+	BtnBold,
+	BtnBulletList,
+	BtnItalic,
+	BtnLink,
+	BtnNumberedList,
+	BtnUnderline,
+	Editor,
+	EditorProvider,
+	Toolbar,
+	Separator,
+} from "react-simple-wysiwyg";
+
 const UserAddListings = (props) => {
 	const { location, id } = props;
 	const [isEdit, setIsEdit] = useState(id ? true : false);
@@ -85,6 +98,7 @@ const ChooseCategory = ({ isEdit, data = null }) => {
 		current: 0,
 		category: data?.category?.id || null,
 		name: null,
+		description: `<b>Description</b>`,
 		fields: data?.fields || [],
 		llistingLocation: {
 			country: data?.country || null,
@@ -144,7 +158,11 @@ const ChooseCategory = ({ isEdit, data = null }) => {
 	};
 	const onFinish = (values) => {
 		console.log({ values });
-		addListingsAPI({ ...values, user }).then((id) => {
+		addListingsAPI({
+			...values,
+			description: state.description,
+			user,
+		}).then((id) => {
 			Modal.success({
 				title: "Success",
 				content: `Your listing has been added successfully. Your listing id is ${id}`,
@@ -317,6 +335,12 @@ const RenderFields = ({ fields, isEdit }) => {
 };
 
 const ShowFixedPrompts = ({ mainState, setState }) => {
+	const onchangeHandler = (e) => {
+		setState({
+			...mainState,
+			description: e.target.value,
+		});
+	};
 	return (
 		<div className="show-fixed-prompts">
 			<Form.Item
@@ -333,7 +357,7 @@ const ShowFixedPrompts = ({ mainState, setState }) => {
 			>
 				<Input />
 			</Form.Item>
-			<Form.Item
+			{/* <Form.Item
 				label="Description"
 				name="description"
 				required
@@ -344,9 +368,29 @@ const ShowFixedPrompts = ({ mainState, setState }) => {
 						are offering or seeking, and who you are.
 					</Typography.Text>
 				}
-			>
-				<Input.TextArea rows={5} allowClear />
-			</Form.Item>
+			> */}
+			{/* <Input.TextArea rows={5} allowClear /> */}
+			<div style={{ margin: "50px 0" }}>
+				<EditorProvider>
+					<Editor
+						style={{ height: 150 }}
+						value={mainState.description}
+						onChange={onchangeHandler}
+					>
+						<Toolbar>
+							<BtnBold />
+							<BtnItalic />
+							<BtnUnderline />
+							<Separator />
+							<BtnBulletList />
+							<BtnNumberedList />
+							<Separator />
+							<BtnLink />
+						</Toolbar>
+					</Editor>
+				</EditorProvider>
+			</div>
+			{/* </Form.Item> */}
 			<Row justify="start" align="middle" gutter={[24, 24]}>
 				<Col span={8}>
 					<Form.Item
@@ -459,7 +503,7 @@ const ShowFixedPrompts = ({ mainState, setState }) => {
 							showSearch
 							options={Country.getAllCountries().map((country) => ({
 								label: country.name,
-								value: country.isoCode,
+								value: JSON.stringify(country),
 							}))}
 							placeholder="Select a country"
 							onChange={(value) => {
@@ -495,10 +539,10 @@ const ShowFixedPrompts = ({ mainState, setState }) => {
 							showSearch
 							options={
 								State.getStatesOfCountry(
-									mainState.llistingLocation.country
+									JSON.parse(mainState.llistingLocation.country)?.isoCode
 								)?.map((state) => ({
 									label: state.name,
-									value: state.isoCode,
+									value: JSON.stringify(state),
 								})) || []
 							}
 							placeholder="Select a state"
@@ -535,12 +579,12 @@ const ShowFixedPrompts = ({ mainState, setState }) => {
 							showSearch
 							options={
 								City.getCitiesOfState(
-									mainState.llistingLocation.country,
-									mainState.llistingLocation.state
+									JSON.parse(mainState.llistingLocation.country)?.isoCode,
+									JSON.parse(mainState.llistingLocation.state)?.isoCode
 								)
 									?.map((city) => ({
 										label: city.name,
-										value: city.name,
+										value: JSON.stringify(city),
 									}))
 									.sort((a, b) => a.label.localeCompare(b.label)) || []
 							}

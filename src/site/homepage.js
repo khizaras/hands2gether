@@ -22,8 +22,9 @@ import LocationPickerPopup from "./components/locationPicker";
 import { Layout } from "antd";
 import banner1 from "./assets/images/h2g-banners.png";
 import { RenderIcon } from "../api/categories";
-import { LuSuperscript } from "react-icons/lu";
+import { LuEye, LuMessagesSquare, LuSuperscript } from "react-icons/lu";
 import { Link } from "@gatsbyjs/reach-router";
+import { IconText } from "./user/mylistings";
 
 const { Content } = Layout;
 const Hands2getherHomepageContent = () => {
@@ -116,12 +117,19 @@ const Hands2getherHomepageContent = () => {
 							<div className="categories-list">
 								{categories.data.map((item, index) => (
 									<div className="category-item" key={index}>
-										<div className="category-item-image">
-											<RenderIcon icon={item.icon} />
-										</div>
-										<div className="category-item-title">
-											<Typography.Title level={4}>{item.name}</Typography.Title>{" "}
-										</div>
+										<Link
+											to={`/categories/${item.name}/${item._id}`}
+											state={item}
+										>
+											<div className="category-item-image">
+												<RenderIcon icon={item.icon} />
+											</div>
+											<div className="category-item-title">
+												<Typography.Title level={4}>
+													{item.name}
+												</Typography.Title>{" "}
+											</div>
+										</Link>
 									</div>
 								))}
 							</div>
@@ -228,15 +236,28 @@ export const ListingsCard = ({ listing }) => {
 											</Col>
 										))}
 									</Row>
-									<Row justify="start" align="" gutter={[16, 16]}>
-										<Col span={24}>
-											<Space size={0} align="start" direction="vertical">
-												<Typography.Text>Location </Typography.Text>
+
+									<Row
+										justify="end"
+										align="bottom"
+										gutter={[16, 16]}
+										className="stats"
+									>
+										<Col flex={1}>
+											<Space size={10}>
+												<ImLocation />
 												<Typography.Text strong>
-													<ImLocation /> {listing.location.city} ,{" "}
-													{listing.location.state} , {listing.location.country}
+													{listing.location?.city?.name} ,{" "}
+													{listing?.location?.state?.name} ,{" "}
+													{listing?.location?.country?.name}
 												</Typography.Text>
 											</Space>
+										</Col>
+										<Col flex={0}>
+											<IconText icon={LuEye} text={23} />
+										</Col>
+										<Col flex={0}>
+											<IconText icon={LuMessagesSquare} text={2} />
 										</Col>
 									</Row>
 								</div>
