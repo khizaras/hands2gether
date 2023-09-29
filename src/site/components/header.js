@@ -110,6 +110,13 @@ const Hands2getherPrimaryHeader = () => {
 								<Avatar
 									size={45}
 									style={{ backgroundColor: "#f5f5f5" }}
+									src={
+										user.isAuth ? (
+											user.photoURL && <img src={user.photoURL} />
+										) : (
+											<UserOutlined />
+										)
+									}
 									icon={
 										user.isAuth ? (
 											user.photoURL && <img src={user.photoURL} />

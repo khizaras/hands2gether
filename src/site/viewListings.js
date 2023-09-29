@@ -110,6 +110,7 @@ const ViewListings = (props) => {
 				}
 			}
 		}
+		return () => {};
 	}, [id, listings.isLoaded]);
 
 	return (
@@ -237,7 +238,11 @@ const ViewListings = (props) => {
 										<Divider />
 
 										<Col span={24}>
-											<Typography.Title level={5}>Comments</Typography.Title>
+											<Typography.Title level={5}>
+												Comments{" "}
+												{currentComments.length > 0 &&
+													` (${currentComments.length}) `}
+											</Typography.Title>
 											<Divider />
 											<Steps
 												status="process"
